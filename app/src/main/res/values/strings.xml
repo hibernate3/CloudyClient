@@ -1,0 +1,20 @@
+<resources>
+    <string name="app_name">CloudyClient</string>
+
+    <string name="dummy_button">Dummy Button</string>
+    <string name="dummy_content">DUMMY\nCONTENT</string>
+    <string name="title_activity_pic_wall">PicWallActivity</string>
+
+    <string name="allow">允许</string>
+    <string name="deny">拒绝</string>
+    <string name="permission_rationale">此程序请求存储空间等权限，以保证应用的相应功能可以正常使用</string>
+    <string name="permission_denied">权限被拒绝，程序无法正常使用</string>
+    <string name="permission_never_askagain">请在”设置-应用-Cloudy“中开启权限，以正常使用Cloudy的功能</string>
+    <string name="permission_deny_notice">如果您拒绝此权限，此程序的基本功能可能会无法正常使用</string>
+
+    <string name="grant_permission">授权</string>
+    <string name="title_activity_pic_main">PicMainActivity</string>
+    <string name="title_home">Home</string>
+    <string name="title_dashboard">Dashboard</string>
+    <string name="title_notifications">Notifications</string>
+</resources>
