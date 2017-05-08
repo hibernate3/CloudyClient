@@ -16,7 +16,6 @@ import permissions.dispatcher.NeedsPermission;
  */
 
 public class LocalStorageUtil {
-    private static final String TAG = "myLog";
     private static final String picFolderName = "Photo Receiver";
 
     //获取本地图片的路径集合
@@ -26,7 +25,6 @@ public class LocalStorageUtil {
         if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)){
 
             File folder = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), picFolderName);
-            Log.d(TAG, folder.getAbsolutePath());
             File[] files = folder.listFiles();
             if (files != null) {
                 for (File file : files) {

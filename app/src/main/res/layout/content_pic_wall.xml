@@ -12,8 +12,26 @@
     <android.support.v7.widget.RecyclerView
         android:id="@+id/pic_wall_rv"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"/>
 
-    </android.support.v7.widget.RecyclerView>
+    <FrameLayout
+        android:id="@+id/show_canvas"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone">
+
+        <ImageView
+            android:id="@+id/show_bg"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#ff000000" />
+
+        <com.example.photoview.PhotoView
+            android:id="@+id/show_img"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="centerInside"/>
+
+    </FrameLayout>
 
 </android.support.constraint.ConstraintLayout>
