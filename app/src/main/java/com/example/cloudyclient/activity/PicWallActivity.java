@@ -1,6 +1,7 @@
 package com.example.cloudyclient.activity;
 
 import android.content.Context;
+import android.content.Intent;
 import android.media.ExifInterface;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -55,7 +56,11 @@ public class PicWallActivity extends AppCompatActivity {
     AlphaAnimation in = new AlphaAnimation(0, 1);
     AlphaAnimation out = new AlphaAnimation(1, 0);
 
+    private final int TO_PIC_MAIN = 0;
+    private PicInfoBean picInfoBean = null;
+
     private RecyclerView.Adapter mAdapter;
+    private RecyclerView.ViewHolder mViewHolder;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -114,29 +119,30 @@ public class PicWallActivity extends AppCompatActivity {
     }
 
     class PicWallAdapter extends RecyclerView.Adapter<PicWallAdapter.PicItemViewHolder> {
-        private final LayoutInflater mLayoutInflater;
-        private Context mContext;
-        private List<String> mData;
+        private final LayoutInflater layoutInflater;
+        private Context context;
+        private List<String> data;
 
         public PicWallAdapter(Context context) {
-            mData = LocalStorageUtil.getAllPicPath();
-            this.mContext = context;
-            mLayoutInflater = LayoutInflater.from(mContext);
+            data = LocalStorageUtil.getAllPicPath();
+            this.context = context;
+            layoutInflater = LayoutInflater.from(context);
         }
 
 
         @Override
         public PicItemViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            return new PicItemViewHolder(mLayoutInflater.inflate(R.layout.pic_wall_item, parent, false));
+            return new PicItemViewHolder(layoutInflater.inflate(R.layout.pic_wall_item, parent, false));
         }
 
         @Override
         public void onBindViewHolder(PicItemViewHolder holder, int position) {
-            Picasso picasso = Picasso.with(mContext);
-            PicInfoBean picInfoBean = null;
+            mViewHolder = holder;
+
+            Picasso picasso = Picasso.with(context);
 
             try {
-                ExifInterface exifInterface = new ExifInterface(mData.get(position));
+                ExifInterface exifInterface = new ExifInterface(data.get(position));
                 picInfoBean = new PicInfoBean(exifInterface);
 
             } catch (IOException e) {
@@ -144,7 +150,7 @@ public class PicWallActivity extends AppCompatActivity {
             }
 
             picasso
-                    .load(new File(mData.get(position)))
+                    .load(new File(data.get(position)))
                     .placeholder(R.mipmap.ic_launcher)
                     .error(R.mipmap.ic_launcher)
                     .noFade()
@@ -161,7 +167,7 @@ public class PicWallActivity extends AppCompatActivity {
 
         @Override
         public int getItemCount() {
-            return mData == null ? 0 : mData.size();
+            return data == null ? 0 : data.size();
         }
 
         class PicItemViewHolder extends RecyclerView.ViewHolder {
@@ -177,13 +183,10 @@ public class PicWallActivity extends AppCompatActivity {
                 itemView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        Log.d(MainApplication.TAG, "getPosition: " + getPosition() + ", getLayoutPosition: " +
-                                "" + getLayoutPosition());
-
                         toolbar.setVisibility(View.GONE);//隐去toolbar
                         photoViewInfo = photoView.getInfo();//获取原始图片的信息
 
-                        Picasso.with(mContext).load(new File(mData.get(getPosition()))).into(showImg, new
+                        Picasso.with(context).load(new File(data.get(getLayoutPosition()))).into(showImg, new
                                 Callback() {
                             @Override
                             public void onSuccess() {
@@ -204,7 +207,10 @@ public class PicWallActivity extends AppCompatActivity {
                 itemView.setOnLongClickListener(new View.OnLongClickListener() {
                     @Override
                     public boolean onLongClick(View v) {
-                        textView.setBackgroundResource(android.R.color.holo_red_light);
+                        Intent intent = new Intent(context, PicMainActivity.class);
+                        intent.putExtra("pic_path", data.get(getLayoutPosition()));
+                        intent.putExtra("pic_info", picInfoBean);
+                        startActivityForResult(intent, TO_PIC_MAIN);
                         return true;
                     }
                 });
@@ -227,4 +233,12 @@ public class PicWallActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == RESULT_OK) {
+            if (requestCode == TO_PIC_MAIN) {
+            }
+        }
+    }
 }

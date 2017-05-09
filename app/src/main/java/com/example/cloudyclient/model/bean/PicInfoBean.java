@@ -1,12 +1,14 @@
 package com.example.cloudyclient.model.bean;
 
 import android.media.ExifInterface;
+import android.os.Parcel;
+import android.os.Parcelable;
 
 /**
  * Created by wangyuhang on 17-5-5.
  */
 
-public class PicInfoBean {
+public class PicInfoBean implements Parcelable {
     private String FMake;//相机厂家
     private String FModel;//相机机型
     private String FDateTime;//拍摄时间
@@ -14,8 +16,8 @@ public class PicInfoBean {
     private String FExposureTime;//曝光时间
     private String FISOSpeedRatings;//ISO值
     private String FFocalLength;//焦距
-    private String FImageLength;//图片像素长度
-    private String FImageWidth;//图片像素宽度
+    private String FImageLength;//照片像素高度
+    private String FImageWidth;//照片像素宽度
 
     public PicInfoBean() {
     }
@@ -45,6 +47,30 @@ public class PicInfoBean {
         this.FImageLength = FImageLength;
         this.FImageWidth = FImageWidth;
     }
+
+    protected PicInfoBean(Parcel in) {
+        FMake = in.readString();
+        FModel = in.readString();
+        FDateTime = in.readString();
+        FFNumber = in.readString();
+        FExposureTime = in.readString();
+        FISOSpeedRatings = in.readString();
+        FFocalLength = in.readString();
+        FImageLength = in.readString();
+        FImageWidth = in.readString();
+    }
+
+    public static final Creator<PicInfoBean> CREATOR = new Creator<PicInfoBean>() {
+        @Override
+        public PicInfoBean createFromParcel(Parcel in) {
+            return new PicInfoBean(in);
+        }
+
+        @Override
+        public PicInfoBean[] newArray(int size) {
+            return new PicInfoBean[size];
+        }
+    };
 
     public String getFMake() {
         return FMake;
@@ -116,5 +142,23 @@ public class PicInfoBean {
 
     public void setFImageWidth(String FImageWidth) {
         this.FImageWidth = FImageWidth;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(FMake);
+        dest.writeString(FModel);
+        dest.writeString(FDateTime);
+        dest.writeString(FFNumber);
+        dest.writeString(FExposureTime);
+        dest.writeString(FISOSpeedRatings);
+        dest.writeString(FFocalLength);
+        dest.writeString(FImageLength);
+        dest.writeString(FImageWidth);
     }
 }
