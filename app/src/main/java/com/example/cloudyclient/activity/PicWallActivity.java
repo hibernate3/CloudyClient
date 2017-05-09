@@ -144,7 +144,6 @@ public class PicWallActivity extends AppCompatActivity {
             try {
                 ExifInterface exifInterface = new ExifInterface(data.get(position));
                 picInfoBean = new PicInfoBean(exifInterface);
-
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -188,19 +187,19 @@ public class PicWallActivity extends AppCompatActivity {
 
                         Picasso.with(context).load(new File(data.get(getLayoutPosition()))).into(showImg, new
                                 Callback() {
-                            @Override
-                            public void onSuccess() {
-                                showCanvas.startAnimation(in);
-                                showBg.setVisibility(View.VISIBLE);
-                                showCanvas.setVisibility(View.VISIBLE);
-                                showImg.animaFrom(photoViewInfo);
-                            }
+                                    @Override
+                                    public void onSuccess() {
+                                        showCanvas.startAnimation(in);
+                                        showBg.setVisibility(View.VISIBLE);
+                                        showCanvas.setVisibility(View.VISIBLE);
+                                        showImg.animaFrom(photoViewInfo);
+                                    }
 
-                            @Override
-                            public void onError() {
-                                toolbar.setVisibility(View.VISIBLE);//恢复显示toolbar
-                            }
-                        });
+                                    @Override
+                                    public void onError() {
+                                        toolbar.setVisibility(View.VISIBLE);//恢复显示toolbar
+                                    }
+                                });
                     }
                 });
 

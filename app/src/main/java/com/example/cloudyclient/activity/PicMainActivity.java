@@ -17,6 +17,7 @@ import android.widget.TextView;
 import com.example.cloudyclient.MainApplication;
 import com.example.cloudyclient.R;
 import com.example.cloudyclient.model.bean.PicInfoBean;
+import com.example.cloudyclient.model.biz.PicEntityManager;
 import com.example.photoview.PhotoView;
 import com.squareup.picasso.Picasso;
 
@@ -122,6 +123,5 @@ public class PicMainActivity extends AppCompatActivity {
 
     @OnClick(R.id.search_btn)
     public void onViewClicked() {
-        
     }
 }

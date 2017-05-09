@@ -4,10 +4,11 @@ import android.media.ExifInterface;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import org.greenrobot.greendao.annotation.Entity;
+
 /**
  * Created by wangyuhang on 17-5-5.
  */
-
 public class PicInfoBean implements Parcelable {
     private String FMake;//相机厂家
     private String FModel;//相机机型
@@ -27,7 +28,14 @@ public class PicInfoBean implements Parcelable {
         this.FModel = exifInterface.getAttribute(ExifInterface.TAG_MODEL);
         this.FDateTime = exifInterface.getAttribute(ExifInterface.TAG_DATETIME);
         this.FFNumber = exifInterface.getAttribute(ExifInterface.TAG_F_NUMBER);
-        this.FExposureTime = exifInterface.getAttribute(ExifInterface.TAG_EXPOSURE_TIME);
+
+        double tempTime = exifInterface.getAttributeDouble(ExifInterface.TAG_EXPOSURE_TIME, 0.00);
+        if (tempTime < 1.00) {
+            this.FExposureTime = "1/" + Math.rint(1 / tempTime);
+        } else {
+            this.FExposureTime = "" + tempTime;
+        }
+        
         this.FISOSpeedRatings = exifInterface.getAttribute(ExifInterface.TAG_ISO_SPEED_RATINGS);
         this.FFocalLength = exifInterface.getAttribute(ExifInterface.TAG_FOCAL_LENGTH);
         this.FImageLength = exifInterface.getAttribute(ExifInterface.TAG_IMAGE_LENGTH);
@@ -36,7 +44,7 @@ public class PicInfoBean implements Parcelable {
 
     public PicInfoBean(String FMake, String FModel, String FDateTime, String FFNumber, String
             FExposureTime, String FISOSpeedRatings, String FFocalLength, String FImageLength, String
-            FImageWidth) {
+                               FImageWidth) {
         this.FMake = FMake;
         this.FModel = FModel;
         this.FDateTime = FDateTime;
