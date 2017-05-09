@@ -5,10 +5,16 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.example.cloudyclient.MainApplication;
 import com.example.cloudyclient.R;
 import com.example.cloudyclient.model.bean.PicInfoBean;
 import com.example.photoview.PhotoView;
@@ -18,6 +24,7 @@ import java.io.File;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 public class PicMainActivity extends AppCompatActivity {
 
@@ -25,6 +32,24 @@ public class PicMainActivity extends AppCompatActivity {
     PhotoView showImg;
     @BindView(R.id.message)
     TextView message;
+    @BindView(R.id.search_panel)
+    LinearLayout searchPanel;
+    @BindView(R.id.aperture_cb)
+    CheckBox apertureCb;
+    @BindView(R.id.iso_cb)
+    CheckBox isoCb;
+    @BindView(R.id.expose_cb)
+    CheckBox exposeCb;
+    @BindView(R.id.len_cb)
+    CheckBox lenCb;
+    @BindView(R.id.search_btn)
+    Button searchBtn;
+    @BindView(R.id.content)
+    FrameLayout content;
+    @BindView(R.id.navigation)
+    BottomNavigationView navigation;
+    @BindView(R.id.container)
+    LinearLayout container;
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -35,14 +60,17 @@ public class PicMainActivity extends AppCompatActivity {
                 case R.id.navigation_show:
                     showImg.setVisibility(View.VISIBLE);
                     message.setVisibility(View.INVISIBLE);
+                    searchPanel.setVisibility(View.INVISIBLE);
                     return true;
                 case R.id.navigation_data:
                     showImg.setVisibility(View.INVISIBLE);
                     message.setVisibility(View.VISIBLE);
+                    searchPanel.setVisibility(View.INVISIBLE);
                     return true;
                 case R.id.navigation_compare:
                     showImg.setVisibility(View.INVISIBLE);
                     message.setVisibility(View.INVISIBLE);
+                    searchPanel.setVisibility(View.VISIBLE);
                     return true;
             }
             return false;
@@ -90,5 +118,10 @@ public class PicMainActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+    }
+
+    @OnClick(R.id.search_btn)
+    public void onViewClicked() {
+        
     }
 }

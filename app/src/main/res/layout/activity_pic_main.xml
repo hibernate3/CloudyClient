@@ -31,6 +31,51 @@
             android:layout_marginTop="@dimen/activity_vertical_margin"
             android:visibility="invisible"/>
 
+        <LinearLayout
+            android:id="@+id/search_panel"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:layout_marginTop="@dimen/activity_vertical_margin"
+            android:layout_marginLeft="@dimen/activity_vertical_margin"
+            android:visibility="invisible">
+
+            <CheckBox
+                android:id="@+id/aperture_cb"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/activity_vertical_margin"
+                android:text="光圈"/>
+
+            <CheckBox
+                android:id="@+id/iso_cb"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/activity_vertical_margin"
+                android:text="ISO"/>
+
+            <CheckBox
+                android:id="@+id/expose_cb"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/activity_vertical_margin"
+                android:text="快门时间"/>
+
+            <CheckBox
+                android:id="@+id/len_cb"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/activity_vertical_margin"
+                android:text="焦距"/>
+
+            <Button
+                android:id="@+id/search_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/activity_vertical_margin"
+                android:text="搜索"/>
+        </LinearLayout>
+
     </FrameLayout>
 
     <android.support.design.widget.BottomNavigationView
