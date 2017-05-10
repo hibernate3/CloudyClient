@@ -2,11 +2,9 @@ package com.example.cloudyclient;
 
 import android.app.Application;
 import android.content.Context;
-import android.os.Environment;
-import android.util.Log;
 
 import com.example.cloudyclient.model.biz.GreenDaoManager;
-import com.example.cloudyclient.model.biz.PicEntityManager;
+import com.example.cloudyclient.model.biz.PicEntityDBManager;
 import com.example.cloudyclient.util.LocalStorageUtil;
 
 /**
@@ -33,5 +31,6 @@ public class MainApplication extends Application {
     }
 
     private void syncDatabase() {
+        PicEntityDBManager.getInstance().insert(LocalStorageUtil.getAllPicPath());
     }
 }

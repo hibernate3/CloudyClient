@@ -1,17 +1,24 @@
 package com.example.cloudyclient.model.bean;
 
+import android.media.ExifInterface;
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import org.greenrobot.greendao.annotation.Entity;
 import org.greenrobot.greendao.annotation.Id;
 import org.greenrobot.greendao.annotation.ToOne;
 import org.greenrobot.greendao.annotation.Unique;
 import org.greenrobot.greendao.annotation.Generated;
 
+import java.io.File;
+import java.io.IOException;
+
 /**
  * Created by wangyuhang on 17-5-9.
  */
 
 @Entity
-public class PicEntity {
+public class PicEntity implements Parcelable {
     @Id
     private Long id;
     @Unique
@@ -55,6 +62,60 @@ public class PicEntity {
     @Generated(hash = 328434693)
     public PicEntity() {
     }
+
+    protected PicEntity(Parcel in) {
+        fileName = in.readString();
+        FMake = in.readString();
+        FModel = in.readString();
+        FDateTime = in.readString();
+        FFNumber = in.readString();
+        FExposureTime = in.readString();
+        FISOSpeedRatings = in.readString();
+        FFocalLength = in.readString();
+        FImageLength = in.readString();
+        FImageWidth = in.readString();
+        MD5 = in.readString();
+    }
+
+    public PicEntity(String path) {
+        try {
+            ExifInterface exifInterface = new ExifInterface(path);
+
+            this.fileName = path;
+            this.fileSize = new File(path).length();
+
+            this.FMake = exifInterface.getAttribute(ExifInterface.TAG_MAKE);
+            this.FModel = exifInterface.getAttribute(ExifInterface.TAG_MODEL);
+            this.FDateTime = exifInterface.getAttribute(ExifInterface.TAG_DATETIME);
+            this.FFNumber = exifInterface.getAttribute(ExifInterface.TAG_F_NUMBER);
+
+            double tempTime = exifInterface.getAttributeDouble(ExifInterface.TAG_EXPOSURE_TIME, 0.00);
+            if (tempTime < 1.00) {
+                this.FExposureTime = "1/" + Math.rint(1 / tempTime);
+            } else {
+                this.FExposureTime = "" + tempTime;
+            }
+
+            this.FISOSpeedRatings = exifInterface.getAttribute(ExifInterface.TAG_ISO_SPEED_RATINGS);
+            this.FFocalLength = exifInterface.getAttribute(ExifInterface.TAG_FOCAL_LENGTH);
+            this.FImageLength = exifInterface.getAttribute(ExifInterface.TAG_IMAGE_LENGTH);
+            this.FImageWidth = exifInterface.getAttribute(ExifInterface.TAG_IMAGE_WIDTH);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static final Creator<PicEntity> CREATOR = new Creator<PicEntity>() {
+        @Override
+        public PicEntity createFromParcel(Parcel in) {
+            return new PicEntity(in);
+        }
+
+        @Override
+        public PicEntity[] newArray(int size) {
+            return new PicEntity[size];
+        }
+    };
 
     public Long getId() {
         return this.id;
@@ -158,5 +219,44 @@ public class PicEntity {
 
     public void setMD5(String MD5) {
         this.MD5 = MD5;
+    }
+
+    public void setExif(ExifInterface exifInterface) {
+        this.FMake = exifInterface.getAttribute(ExifInterface.TAG_MAKE);
+        this.FModel = exifInterface.getAttribute(ExifInterface.TAG_MODEL);
+        this.FDateTime = exifInterface.getAttribute(ExifInterface.TAG_DATETIME);
+        this.FFNumber = exifInterface.getAttribute(ExifInterface.TAG_F_NUMBER);
+
+        double tempTime = exifInterface.getAttributeDouble(ExifInterface.TAG_EXPOSURE_TIME, 0.00);
+        if (tempTime < 1.00) {
+            this.FExposureTime = "1/" + Math.rint(1 / tempTime);
+        } else {
+            this.FExposureTime = "" + tempTime;
+        }
+
+        this.FISOSpeedRatings = exifInterface.getAttribute(ExifInterface.TAG_ISO_SPEED_RATINGS);
+        this.FFocalLength = exifInterface.getAttribute(ExifInterface.TAG_FOCAL_LENGTH);
+        this.FImageLength = exifInterface.getAttribute(ExifInterface.TAG_IMAGE_LENGTH);
+        this.FImageWidth = exifInterface.getAttribute(ExifInterface.TAG_IMAGE_WIDTH);
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(fileName);
+        dest.writeString(FMake);
+        dest.writeString(FModel);
+        dest.writeString(FDateTime);
+        dest.writeString(FFNumber);
+        dest.writeString(FExposureTime);
+        dest.writeString(FISOSpeedRatings);
+        dest.writeString(FFocalLength);
+        dest.writeString(FImageLength);
+        dest.writeString(FImageWidth);
+        dest.writeString(MD5);
     }
 }

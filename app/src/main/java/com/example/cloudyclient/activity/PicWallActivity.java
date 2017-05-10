@@ -23,7 +23,7 @@ import android.widget.TextView;
 
 import com.example.cloudyclient.MainApplication;
 import com.example.cloudyclient.R;
-import com.example.cloudyclient.model.bean.PicInfoBean;
+import com.example.cloudyclient.model.bean.PicEntity;
 import com.example.cloudyclient.util.LocalStorageUtil;
 import com.example.photoview.Info;
 import com.example.photoview.PhotoView;
@@ -57,7 +57,7 @@ public class PicWallActivity extends AppCompatActivity {
     AlphaAnimation out = new AlphaAnimation(1, 0);
 
     private final int TO_PIC_MAIN = 0;
-    private PicInfoBean picInfoBean = null;
+    private PicEntity picEntity = null;
 
     private RecyclerView.Adapter mAdapter;
     private RecyclerView.ViewHolder mViewHolder;
@@ -140,13 +140,7 @@ public class PicWallActivity extends AppCompatActivity {
             mViewHolder = holder;
 
             Picasso picasso = Picasso.with(context);
-
-            try {
-                ExifInterface exifInterface = new ExifInterface(data.get(position));
-                picInfoBean = new PicInfoBean(exifInterface);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            picEntity = new PicEntity(data.get(position));
 
             picasso
                     .load(new File(data.get(position)))
@@ -156,7 +150,7 @@ public class PicWallActivity extends AppCompatActivity {
                     .resize(600, 400).centerInside()
                     .into(((PicItemViewHolder) holder).photoView);
 
-            ((PicItemViewHolder) holder).textView.setText(picInfoBean.getFMake());
+            ((PicItemViewHolder) holder).textView.setText(picEntity.getFMake());
         }
 
         @Override
@@ -208,7 +202,7 @@ public class PicWallActivity extends AppCompatActivity {
                     public boolean onLongClick(View v) {
                         Intent intent = new Intent(context, PicMainActivity.class);
                         intent.putExtra("pic_path", data.get(getLayoutPosition()));
-                        intent.putExtra("pic_info", picInfoBean);
+                        Log.d(MainApplication.TAG, "" + picEntity.getFExposureTime());
                         startActivityForResult(intent, TO_PIC_MAIN);
                         return true;
                     }

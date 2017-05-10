@@ -10,26 +10,25 @@ import com.example.cloudyclient.model.bean.PicEntity;
 import org.greenrobot.greendao.query.QueryBuilder;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.List;
 
 /**
  * Created by wangyuhang on 17-5-9.
  */
 
-public class PicEntityManager {
-    private static PicEntityManager mInstance;
+public class PicEntityDBManager {
+    private static PicEntityDBManager mInstance;
 
     private PicEntityDao mPicEntityDao;
 
-    public static PicEntityManager getInstance() {
+    public static PicEntityDBManager getInstance() {
         if (mInstance == null) {
-            mInstance = new PicEntityManager();
+            mInstance = new PicEntityDBManager();
         }
         return mInstance;
     }
 
-    private PicEntityManager() {
+    private PicEntityDBManager() {
         mPicEntityDao = GreenDaoManager.getInstance().getSession().getPicEntityDao();
     }
 
@@ -49,7 +48,14 @@ public class PicEntityManager {
                 picEntity.setFModel(exifInterface.getAttribute(ExifInterface.TAG_MODEL));
                 picEntity.setFDateTime(exifInterface.getAttribute(ExifInterface.TAG_DATETIME));
                 picEntity.setFFNumber(exifInterface.getAttribute(ExifInterface.TAG_F_NUMBER));
-                picEntity.setFExposureTime(exifInterface.getAttribute(ExifInterface.TAG_EXPOSURE_TIME));
+
+                double tempTime = exifInterface.getAttributeDouble(ExifInterface.TAG_EXPOSURE_TIME, 0.00);
+                if (tempTime < 1.00) {
+                    picEntity.setFExposureTime("1/" + Math.rint(1 / tempTime));
+                } else {
+                    picEntity.setFExposureTime("" + tempTime);
+                }
+
                 picEntity.setFISOSpeedRatings(exifInterface.getAttribute(ExifInterface
                         .TAG_ISO_SPEED_RATINGS));
                 picEntity.setFFocalLength(exifInterface.getAttribute(ExifInterface.TAG_FOCAL_LENGTH));
