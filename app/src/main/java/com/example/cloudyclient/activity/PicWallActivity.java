@@ -202,7 +202,7 @@ public class PicWallActivity extends AppCompatActivity {
                     public boolean onLongClick(View v) {
                         Intent intent = new Intent(context, PicMainActivity.class);
                         intent.putExtra("pic_path", data.get(getLayoutPosition()));
-                        Log.d(MainApplication.TAG, "" + picEntity.getFExposureTime());
+
                         startActivityForResult(intent, TO_PIC_MAIN);
                         return true;
                     }

@@ -1,15 +1,20 @@
 package com.example.cloudyclient.model.biz;
 
 import android.media.ExifInterface;
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.example.cloudyclient.MainApplication;
 import com.example.cloudyclient.greendao.gen.PicEntityDao;
 import com.example.cloudyclient.model.bean.PicEntity;
 
+import org.greenrobot.greendao.query.Join;
+import org.greenrobot.greendao.query.Query;
 import org.greenrobot.greendao.query.QueryBuilder;
+import org.greenrobot.greendao.query.WhereCondition;
 
 import java.io.File;
+import java.util.IllegalFormatCodePointException;
 import java.util.List;
 
 /**
@@ -85,22 +90,34 @@ public class PicEntityDBManager {
 
     }
 
-    public List<PicEntity> query(String aperture, String iso, String expose, String len) {
-        QueryBuilder<PicEntity> qb = mPicEntityDao.queryBuilder();
+    public List<PicEntity> query(String selfFileName, String aperture, String iso, String exposure, String len) {
+        StringBuffer sql = new StringBuffer("SELECT FILE_NAME FROM PIC_ENTITY WHERE 1 = 1");
 
-        if (aperture != null) {
-            qb.where(PicEntityDao.Properties.FFNumber.eq(aperture));
-        } else if (iso != null) {
-            qb.where(PicEntityDao.Properties.FISOSpeedRatings.eq(iso));
-        } else if (expose != null) {
-            qb.where(PicEntityDao.Properties.FExposureTime.eq(expose));
-        } else if (len != null) {
-            qb.where(PicEntityDao.Properties.FFocalLength.eq(len));
-        } else {
-            return null;
+        if (!TextUtils.isEmpty(aperture)) {
+            sql.append(" AND FFNUMBER = '" + aperture + "'");
         }
 
-        return qb.build().list();
+        if (!TextUtils.isEmpty(iso)) {
+            sql.append(" AND FISOSPEED_RATINGS = '" + iso + "'");
+        }
+
+        if (!TextUtils.isEmpty(exposure)) {
+            sql.append(" AND FEXPOSURE_TIME = '" + exposure + "'");
+        }
+
+        if (!TextUtils.isEmpty(len)) {
+            sql.append(" AND FFOCAL_LENGTH = '" + len + "'");
+        }
+
+        sql.append(" AND FILE_NAME != '" + selfFileName + "'");//排除自己
+
+        Log.d(MainApplication.TAG, sql.toString());
+
+        Query<PicEntity> query = mPicEntityDao.queryBuilder().where(
+                new WhereCondition.StringCondition("FILE_NAME IN " + "(" + sql.toString() + ")")
+        ).build();
+
+        return query.list();
     }
 
     public List<PicEntity> query(String fileName) {

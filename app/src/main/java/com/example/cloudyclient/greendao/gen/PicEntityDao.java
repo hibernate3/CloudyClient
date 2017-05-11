@@ -52,7 +52,7 @@ public class PicEntityDao extends AbstractDao<PicEntity, Long> {
     public static void createTable(Database db, boolean ifNotExists) {
         String constraint = ifNotExists? "IF NOT EXISTS ": "";
         db.execSQL("CREATE TABLE " + constraint + "\"PIC_ENTITY\" (" + //
-                "\"_id\" INTEGER PRIMARY KEY ," + // 0: id
+                "\"_id\" INTEGER PRIMARY KEY AUTOINCREMENT ," + // 0: id
                 "\"FILE_NAME\" TEXT UNIQUE ," + // 1: fileName
                 "\"FILE_SIZE\" INTEGER," + // 2: fileSize
                 "\"FMAKE\" TEXT," + // 3: FMake

@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -13,13 +14,18 @@ import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.example.cloudyclient.MainApplication;
 import com.example.cloudyclient.R;
 import com.example.cloudyclient.model.bean.PicEntity;
 import com.example.cloudyclient.model.biz.PicEntityDBManager;
+import com.example.cloudyclient.util.ToastUtil;
 import com.example.photoview.PhotoView;
 import com.squareup.picasso.Picasso;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -27,9 +33,13 @@ import butterknife.OnClick;
 import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
 import io.reactivex.ObservableOnSubscribe;
+import io.reactivex.ObservableSource;
 import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Action;
+import io.reactivex.functions.Consumer;
+import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 
 public class PicMainActivity extends AppCompatActivity {
@@ -44,8 +54,8 @@ public class PicMainActivity extends AppCompatActivity {
     CheckBox apertureCb;
     @BindView(R.id.iso_cb)
     CheckBox isoCb;
-    @BindView(R.id.expose_cb)
-    CheckBox exposeCb;
+    @BindView(R.id.exposure_cb)
+    CheckBox exposureCb;
     @BindView(R.id.len_cb)
     CheckBox lenCb;
     @BindView(R.id.search_btn)
@@ -80,7 +90,8 @@ public class PicMainActivity extends AppCompatActivity {
 
     };
 
-    private String picPath;//文件名（含完整路径）
+    private String mPicPath;//文件名（含完整路径）
+    private PicEntity mPicEntity;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -92,10 +103,10 @@ public class PicMainActivity extends AppCompatActivity {
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
         Intent intent = getIntent();
-        picPath = intent.getStringExtra("pic_path");
+        mPicPath = intent.getStringExtra("pic_path");
 
         showImg.enable();
-        Picasso.with(this).load(new File(picPath)).into(showImg);
+        Picasso.with(this).load(new File(mPicPath)).into(showImg);
     }
 
     private void showData() {
@@ -107,7 +118,7 @@ public class PicMainActivity extends AppCompatActivity {
                 .create(new ObservableOnSubscribe<PicEntity>() {
                     @Override
                     public void subscribe(ObservableEmitter<PicEntity> emitter) throws Exception {
-                        emitter.onNext(PicEntityDBManager.getInstance().query(picPath).get(0));
+                        emitter.onNext(PicEntityDBManager.getInstance().query(mPicPath).get(0));
                     }
                 })
                 .subscribeOn(Schedulers.newThread())
@@ -151,6 +162,74 @@ public class PicMainActivity extends AppCompatActivity {
         searchPanel.setVisibility(View.VISIBLE);
     }
 
+    private void search() {
+        if (mPicEntity == null) {
+            Observable
+                    .create(new ObservableOnSubscribe<PicEntity>() {
+                        @Override
+                        public void subscribe(ObservableEmitter<PicEntity> emitter) throws Exception {
+                            emitter.onNext(PicEntityDBManager.getInstance().query(mPicPath).get(0));
+                        }
+                    })
+                    .map(new Function<PicEntity, List<PicEntity>>() {
+                        @Override
+                        public List<PicEntity> apply(PicEntity picEntity) throws Exception {
+                            mPicEntity = picEntity;
+
+                            List<PicEntity> list = PicEntityDBManager.getInstance().query(
+                                    mPicEntity.getFileName(),
+                                    apertureCb.isChecked() ? mPicEntity.getFFNumber() : null,
+                                    isoCb.isChecked() ? mPicEntity.getFISOSpeedRatings() : null,
+                                    exposureCb.isChecked() ? mPicEntity.getFExposureTime() : null,
+                                    lenCb.isChecked() ? mPicEntity.getFFocalLength() : null);
+
+                            return list;
+                        }
+                    })
+                    .subscribeOn(Schedulers.newThread())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(new Consumer<List<PicEntity>>() {
+                        @Override
+                        public void accept(List<PicEntity> picEntities) throws Exception {
+                            for (int i = 0; i < picEntities.size(); i++) {
+                                Log.d(MainApplication.TAG, picEntities.get(i).getFileName());
+                            }
+                        }
+                    }, new Consumer<Throwable>() {
+                        @Override
+                        public void accept(Throwable throwable) throws Exception {
+                        }
+                    });
+        } else {
+            Observable
+                    .create(new ObservableOnSubscribe<List<PicEntity>>() {
+                        @Override
+                        public void subscribe(ObservableEmitter<List<PicEntity>> emitter) throws Exception {
+                            emitter.onNext(PicEntityDBManager.getInstance().query(
+                                    mPicEntity.getFileName(),
+                                    apertureCb.isChecked() ? mPicEntity.getFFNumber() : null,
+                                    isoCb.isChecked() ? mPicEntity.getFISOSpeedRatings() : null,
+                                    exposureCb.isChecked() ? mPicEntity.getFExposureTime() : null,
+                                    lenCb.isChecked() ? mPicEntity.getFFocalLength() : null));
+                        }
+                    })
+                    .subscribeOn(Schedulers.newThread())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(new Consumer<List<PicEntity>>() {
+                        @Override
+                        public void accept(List<PicEntity> picEntities) throws Exception {
+                            for (int i = 0; i < picEntities.size(); i++) {
+                                Log.d(MainApplication.TAG, picEntities.get(i).getFileName());
+                            }
+                        }
+                    }, new Consumer<Throwable>() {
+                        @Override
+                        public void accept(Throwable throwable) throws Exception {
+                        }
+                    });
+        }
+    }
+
     @Override
     public void onBackPressed() {
         setResult(RESULT_OK);
@@ -164,5 +243,11 @@ public class PicMainActivity extends AppCompatActivity {
 
     @OnClick(R.id.search_btn)
     public void onViewClicked() {
+        if (apertureCb.isChecked() || isoCb.isChecked() || exposureCb.isChecked() || lenCb.isChecked()) {
+            search();
+        } else {
+            ToastUtil.showToast(PicMainActivity.this, "请选择其中至少一项属性");
+        }
+
     }
 }
