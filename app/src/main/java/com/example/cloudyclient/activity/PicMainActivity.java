@@ -118,7 +118,12 @@ public class PicMainActivity extends AppCompatActivity {
                 .create(new ObservableOnSubscribe<PicEntity>() {
                     @Override
                     public void subscribe(ObservableEmitter<PicEntity> emitter) throws Exception {
-                        emitter.onNext(PicEntityDBManager.getInstance().query(mPicPath).get(0));
+                        if (mPicEntity == null) {
+                            emitter.onNext(PicEntityDBManager.getInstance().query(mPicPath).get(0));
+                        } else {
+                            emitter.onNext(mPicEntity);
+                        }
+                        emitter.onComplete();
                     }
                 })
                 .subscribeOn(Schedulers.newThread())
@@ -126,7 +131,7 @@ public class PicMainActivity extends AppCompatActivity {
                 .subscribe(new Observer<PicEntity>() {
                     @Override
                     public void onSubscribe(Disposable d) {
-                        Log.d(MainApplication.TAG, "0: " + mPicEntity);
+                        Log.d(MainApplication.TAG, "开始获取照片数据...");
                     }
 
                     @Override
@@ -148,12 +153,12 @@ public class PicMainActivity extends AppCompatActivity {
 
                     @Override
                     public void onError(Throwable e) {
-                        Log.e(MainApplication.TAG, e.toString());
+                        Log.e(MainApplication.TAG, "获取照片数据异常: " + e.toString());
                     }
 
                     @Override
                     public void onComplete() {
-                        Log.d(MainApplication.TAG, "0: onComplete()");
+                        Log.d(MainApplication.TAG, "获取照片数据结束.");
                     }
                 });
     }
@@ -165,93 +170,59 @@ public class PicMainActivity extends AppCompatActivity {
     }
 
     private void search() {
-        if (mPicEntity == null) {
-            Observable
-                    .create(new ObservableOnSubscribe<PicEntity>() {
-                        @Override
-                        public void subscribe(ObservableEmitter<PicEntity> emitter) throws Exception {
+        Observable
+                .create(new ObservableOnSubscribe<PicEntity>() {
+                    @Override
+                    public void subscribe(ObservableEmitter<PicEntity> emitter) throws Exception {
+                        if (mPicEntity == null) {
                             emitter.onNext(PicEntityDBManager.getInstance().query(mPicPath).get(0));
+                        } else {
+                            emitter.onNext(mPicEntity);
                         }
-                    })
-                    .map(new Function<PicEntity, List<PicEntity>>() {
-                        @Override
-                        public List<PicEntity> apply(PicEntity picEntity) throws Exception {
-                            mPicEntity = picEntity;
+                        emitter.onComplete();
+                    }
+                })
+                .map(new Function<PicEntity, List<PicEntity>>() {
+                    @Override
+                    public List<PicEntity> apply(PicEntity picEntity) throws Exception {
+                        mPicEntity = picEntity;
 
-                            List<PicEntity> list = PicEntityDBManager.getInstance().query(
-                                    mPicEntity.getFileName(),
-                                    apertureCb.isChecked() ? mPicEntity.getFFNumber() : null,
-                                    isoCb.isChecked() ? mPicEntity.getFISOSpeedRatings() : null,
-                                    exposureCb.isChecked() ? mPicEntity.getFExposureTime() : null,
-                                    lenCb.isChecked() ? mPicEntity.getFFocalLength() : null);
+                        List<PicEntity> list = PicEntityDBManager.getInstance().query(
+                                mPicEntity.getFileName(),
+                                apertureCb.isChecked() ? mPicEntity.getFFNumber() : null,
+                                isoCb.isChecked() ? mPicEntity.getFISOSpeedRatings() : null,
+                                exposureCb.isChecked() ? mPicEntity.getFExposureTime() : null,
+                                lenCb.isChecked() ? mPicEntity.getFFocalLength() : null);
 
-                            return list;
-                        }
-                    })
-                    .subscribeOn(Schedulers.newThread())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(new Consumer<List<PicEntity>>() {
-                        @Override
-                        public void accept(List<PicEntity> picEntities) throws Exception {
-                            gotoPicListActivity();
-                        }
-                    }, new Consumer<Throwable>() {
-                        @Override
-                        public void accept(Throwable throwable) throws Exception {
-                        }
-                    }, new Action() {
-                        @Override
-                        public void run() throws Exception {
-                            Log.d(MainApplication.TAG, "1: onComplete()");
-                        }
-                    }, new Consumer<Disposable>() {
-                        @Override
-                        public void accept(Disposable disposable) throws Exception {
-                            Log.d(MainApplication.TAG, "1: " + mPicEntity);
-                        }
-                    });
-        } else {
-            Observable
-                    .create(new ObservableOnSubscribe<List<PicEntity>>() {
-                        @Override
-                        public void subscribe(ObservableEmitter<List<PicEntity>> emitter) throws Exception {
-                            emitter.onNext(PicEntityDBManager.getInstance().query(
-                                    mPicEntity.getFileName(),
-                                    apertureCb.isChecked() ? mPicEntity.getFFNumber() : null,
-                                    isoCb.isChecked() ? mPicEntity.getFISOSpeedRatings() : null,
-                                    exposureCb.isChecked() ? mPicEntity.getFExposureTime() : null,
-                                    lenCb.isChecked() ? mPicEntity.getFFocalLength() : null));
-                        }
-                    })
-                    .subscribeOn(Schedulers.newThread())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(new Consumer<List<PicEntity>>() {
-                        @Override
-                        public void accept(List<PicEntity> picEntities) throws Exception {
-                            gotoPicListActivity();
-                        }
-                    }, new Consumer<Throwable>() {
-                        @Override
-                        public void accept(Throwable throwable) throws Exception {
-                        }
-                    }, new Action() {
-                        @Override
-                        public void run() throws Exception {
-                            Log.d(MainApplication.TAG, "0: onComplete()");
-                        }
-                    }, new Consumer<Disposable>() {
-                        @Override
-                        public void accept(Disposable disposable) throws Exception {
-                            Log.d(MainApplication.TAG, "2: " + mPicEntity);
-                            if (mPicEntity != null) {
-                                disposable.dispose();
-                            }
-                        }
-                    });
-        }
+                        return list;
+                    }
+                })
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Consumer<List<PicEntity>>() {
+                    @Override
+                    public void accept(List<PicEntity> picEntities) throws Exception {
+                        gotoPicListActivity();
+                    }
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(Throwable throwable) throws Exception {
+                        Log.e(MainApplication.TAG, "搜索比对照片数据异常: " + throwable.toString());
+                    }
+                }, new Action() {
+                    @Override
+                    public void run() throws Exception {
+                        Log.d(MainApplication.TAG, "搜索比对照片数据结束.");
+                    }
+                }, new Consumer<Disposable>() {
+                    @Override
+                    public void accept(Disposable disposable) throws Exception {
+                        Log.d(MainApplication.TAG, "开始搜索比对照片数据...");
+                    }
+                });
     }
 
-    private void gotoPicListActivity(){
+    private void gotoPicListActivity() {
 //        Intent intent = new Intent(PicMainActivity.this, PicListActivity.class);
 //        startActivity(intent);
     }
