@@ -126,11 +126,13 @@ public class PicMainActivity extends AppCompatActivity {
                 .subscribe(new Observer<PicEntity>() {
                     @Override
                     public void onSubscribe(Disposable d) {
-
+                        Log.d(MainApplication.TAG, "0: " + mPicEntity);
                     }
 
                     @Override
                     public void onNext(PicEntity picEntity) {
+                        mPicEntity = picEntity;
+
                         message.setText("文件路径: " + picEntity.getFileName()
                                 + "\n\n相机厂家: " + picEntity.getFMake()
                                 + "\n\n相机机型: " + picEntity.getFModel()
@@ -146,12 +148,12 @@ public class PicMainActivity extends AppCompatActivity {
 
                     @Override
                     public void onError(Throwable e) {
-
+                        Log.e(MainApplication.TAG, e.toString());
                     }
 
                     @Override
                     public void onComplete() {
-
+                        Log.d(MainApplication.TAG, "0: onComplete()");
                     }
                 });
     }
@@ -191,13 +193,21 @@ public class PicMainActivity extends AppCompatActivity {
                     .subscribe(new Consumer<List<PicEntity>>() {
                         @Override
                         public void accept(List<PicEntity> picEntities) throws Exception {
-                            for (int i = 0; i < picEntities.size(); i++) {
-                                Log.d(MainApplication.TAG, picEntities.get(i).getFileName());
-                            }
+                            gotoPicListActivity();
                         }
                     }, new Consumer<Throwable>() {
                         @Override
                         public void accept(Throwable throwable) throws Exception {
+                        }
+                    }, new Action() {
+                        @Override
+                        public void run() throws Exception {
+                            Log.d(MainApplication.TAG, "1: onComplete()");
+                        }
+                    }, new Consumer<Disposable>() {
+                        @Override
+                        public void accept(Disposable disposable) throws Exception {
+                            Log.d(MainApplication.TAG, "1: " + mPicEntity);
                         }
                     });
         } else {
@@ -218,16 +228,32 @@ public class PicMainActivity extends AppCompatActivity {
                     .subscribe(new Consumer<List<PicEntity>>() {
                         @Override
                         public void accept(List<PicEntity> picEntities) throws Exception {
-                            for (int i = 0; i < picEntities.size(); i++) {
-                                Log.d(MainApplication.TAG, picEntities.get(i).getFileName());
-                            }
+                            gotoPicListActivity();
                         }
                     }, new Consumer<Throwable>() {
                         @Override
                         public void accept(Throwable throwable) throws Exception {
                         }
+                    }, new Action() {
+                        @Override
+                        public void run() throws Exception {
+                            Log.d(MainApplication.TAG, "0: onComplete()");
+                        }
+                    }, new Consumer<Disposable>() {
+                        @Override
+                        public void accept(Disposable disposable) throws Exception {
+                            Log.d(MainApplication.TAG, "2: " + mPicEntity);
+                            if (mPicEntity != null) {
+                                disposable.dispose();
+                            }
+                        }
                     });
         }
+    }
+
+    private void gotoPicListActivity(){
+//        Intent intent = new Intent(PicMainActivity.this, PicListActivity.class);
+//        startActivity(intent);
     }
 
     @Override
@@ -248,6 +274,5 @@ public class PicMainActivity extends AppCompatActivity {
         } else {
             ToastUtil.showToast(PicMainActivity.this, "请选择其中至少一项属性");
         }
-
     }
 }
