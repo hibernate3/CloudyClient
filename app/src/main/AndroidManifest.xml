@@ -26,21 +26,19 @@
             android:name=".activity.PicWallActivity"
             android:label="@string/title_activity_pic_wall"
             android:launchMode="singleTask"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar"/>
         <activity
             android:name=".activity.PicMainActivity"
             android:label="@string/title_activity_pic_main"
-            android:launchMode="singleTask"></activity>
+            android:launchMode="singleTask"/>
         <activity
             android:name=".activity.PicListActivity"
-            android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/title_activity_pic_list"
-            android:launchMode="singleTask"
-            android:theme="@style/FullscreenTheme"></activity>
+            android:launchMode="singleTask"/>
 
         <service
             android:name=".service.PicDBService"
-            android:exported="false"></service>
+            android:exported="false"/>
     </application>
 
 </manifest>

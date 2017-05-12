@@ -7,26 +7,25 @@
     android:layout_height="match_parent"
     tools:context="com.example.cloudyclient.activity.PicListActivity">
 
-    <GridView
-        android:id="@+id/pics_gv"
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/pics_rv"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_margin="15dp"
-        android:horizontalSpacing="5dp"
-        android:numColumns="3"
-        android:verticalSpacing="5dp" />
+        android:layout_height="match_parent" />
 
     <FrameLayout
+        android:id="@+id/show_canvas"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:visibility="gone">
 
         <ImageView
+            android:id="@+id/show_bg"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="#ff000000" />
 
         <com.example.photoview.PhotoView
+            android:id="@+id/show_img"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
 

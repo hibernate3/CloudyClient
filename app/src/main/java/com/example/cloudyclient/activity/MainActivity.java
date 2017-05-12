@@ -65,7 +65,7 @@ public class MainActivity extends AppCompatActivity {
     @NeedsPermission({Manifest.permission.READ_EXTERNAL_STORAGE})
     void requestPermission() {
         PicDBService.startActionInsert(MainActivity.this, LocalStorageUtil.getAllPicPath());//遍历图片数据，写入数据库
-        
+
         startActivity(new Intent(MainActivity.this, PicWallActivity.class));
     }
 

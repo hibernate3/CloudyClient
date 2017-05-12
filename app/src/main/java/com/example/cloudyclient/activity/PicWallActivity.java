@@ -148,9 +148,9 @@ public class PicWallActivity extends AppCompatActivity {
                     .error(R.mipmap.ic_launcher)
                     .noFade()
                     .resize(600, 400).centerInside()
-                    .into(((PicItemViewHolder) holder).photoView);
+                    .into(holder.photoView);
 
-            ((PicItemViewHolder) holder).textView.setText(picEntity.getFMake());
+            holder.textView.setText(picEntity.getFMake());
         }
 
         @Override
@@ -179,8 +179,10 @@ public class PicWallActivity extends AppCompatActivity {
                         toolbar.setVisibility(View.GONE);//隐去toolbar
                         photoViewInfo = photoView.getInfo();//获取原始图片的信息
 
-                        Picasso.with(context).load(new File(data.get(getLayoutPosition()))).into(showImg, new
-                                Callback() {
+                        Picasso
+                                .with(context)
+                                .load(new File(data.get(getLayoutPosition())))
+                                .into(showImg, new Callback() {
                                     @Override
                                     public void onSuccess() {
                                         showCanvas.startAnimation(in);

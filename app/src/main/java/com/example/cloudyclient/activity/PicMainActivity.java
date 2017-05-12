@@ -2,6 +2,7 @@ package com.example.cloudyclient.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v7.app.AppCompatActivity;
@@ -202,7 +203,7 @@ public class PicMainActivity extends AppCompatActivity {
                 .subscribe(new Consumer<List<PicEntity>>() {
                     @Override
                     public void accept(List<PicEntity> picEntities) throws Exception {
-                        gotoPicListActivity();
+                        gotoPicListActivity(picEntities);
                     }
                 }, new Consumer<Throwable>() {
                     @Override
@@ -222,9 +223,10 @@ public class PicMainActivity extends AppCompatActivity {
                 });
     }
 
-    private void gotoPicListActivity() {
-//        Intent intent = new Intent(PicMainActivity.this, PicListActivity.class);
-//        startActivity(intent);
+    private void gotoPicListActivity(List<PicEntity> picEntities) {
+        Intent intent = new Intent(PicMainActivity.this, PicListActivity.class);
+        intent.putParcelableArrayListExtra("pic_entities", (ArrayList<? extends Parcelable>) picEntities);
+        startActivity(intent);
     }
 
     @Override
