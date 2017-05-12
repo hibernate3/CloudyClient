@@ -2,9 +2,11 @@ package com.example.cloudyclient;
 
 import android.app.Application;
 import android.content.Context;
+import android.content.Intent;
 
 import com.example.cloudyclient.model.biz.GreenDaoManager;
 import com.example.cloudyclient.model.biz.PicEntityDBManager;
+import com.example.cloudyclient.service.PicDBService;
 import com.example.cloudyclient.util.LocalStorageUtil;
 
 /**
@@ -22,15 +24,9 @@ public class MainApplication extends Application {
 
         mContext = getApplicationContext();
         GreenDaoManager.getInstance();
-
-        syncDatabase();
     }
 
     public static Context getContext() {
         return mContext;
-    }
-
-    private void syncDatabase() {
-        PicEntityDBManager.getInstance().insert(LocalStorageUtil.getAllPicPath());
     }
 }

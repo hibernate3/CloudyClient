@@ -3,12 +3,17 @@ package com.example.cloudyclient.service;
 import android.app.IntentService;
 import android.content.Intent;
 import android.content.Context;
+import android.util.Log;
 
+import com.example.cloudyclient.MainApplication;
 import com.example.cloudyclient.model.biz.PicEntityDBManager;
 import com.example.cloudyclient.util.LocalStorageUtil;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import permissions.dispatcher.RuntimePermissions;
 
 /**
  * An {@link IntentService} subclass for handling asynchronous task requests in
@@ -20,13 +25,9 @@ import java.util.List;
 public class PicDBService extends IntentService {
     // TODO: Rename actions, choose action names that describe tasks that this
     // IntentService can perform, e.g. ACTION_FETCH_NEW_ITEMS
-    private static final String ACTION_FOO = "com.example.cloudyclient.service.action.FOO";
-    private static final String ACTION_BAZ = "com.example.cloudyclient.service.action.BAZ";
     private static final String ACTION_INSERT = "com.example.cloudyclient.service.action.INSERT";
 
     // TODO: Rename parameters
-    private static final String EXTRA_PARAM1 = "com.example.cloudyclient.service.extra.PARAM1";
-    private static final String EXTRA_PARAM2 = "com.example.cloudyclient.service.extra.PARAM2";
     private static final String PICS_PATH_PARAM = "com.example.cloudyclient.service.extra.PICS_PATH_PARAM";
 
     public PicDBService() {
@@ -34,39 +35,15 @@ public class PicDBService extends IntentService {
     }
 
     /**
-     * Starts this service to perform action Foo with the given parameters. If
+     * Starts this service to perform action Insert with the given parameters. If
      * the service is already performing a task this action will be queued.
      *
      * @see IntentService
      */
-    // TODO: Customize helper method
-    public static void startActionFoo(Context context, String param1, String param2) {
-        Intent intent = new Intent(context, PicDBService.class);
-        intent.setAction(ACTION_FOO);
-        intent.putExtra(EXTRA_PARAM1, param1);
-        intent.putExtra(EXTRA_PARAM2, param2);
-        context.startService(intent);
-    }
-
-    /**
-     * Starts this service to perform action Baz with the given parameters. If
-     * the service is already performing a task this action will be queued.
-     *
-     * @see IntentService
-     */
-    // TODO: Customize helper method
-    public static void startActionBaz(Context context, String param1, String param2) {
-        Intent intent = new Intent(context, PicDBService.class);
-        intent.setAction(ACTION_BAZ);
-        intent.putExtra(EXTRA_PARAM1, param1);
-        intent.putExtra(EXTRA_PARAM2, param2);
-        context.startService(intent);
-    }
-
-    public static void startActionInsert(Context context, String[] paths) {
+    public static void startActionInsert(Context context, List<String> paths) {
         Intent intent = new Intent(context, PicDBService.class);
         intent.setAction(ACTION_INSERT);
-        intent.putExtra(PICS_PATH_PARAM, paths);
+        intent.putStringArrayListExtra(PICS_PATH_PARAM, (ArrayList<String>) paths);
         context.startService(intent);
     }
 
@@ -74,40 +51,18 @@ public class PicDBService extends IntentService {
     protected void onHandleIntent(Intent intent) {
         if (intent != null) {
             final String action = intent.getAction();
-            if (ACTION_FOO.equals(action)) {
-                final String param1 = intent.getStringExtra(EXTRA_PARAM1);
-                final String param2 = intent.getStringExtra(EXTRA_PARAM2);
-                handleActionFoo(param1, param2);
-            } else if (ACTION_BAZ.equals(action)) {
-                final String param1 = intent.getStringExtra(EXTRA_PARAM1);
-                final String param2 = intent.getStringExtra(EXTRA_PARAM2);
-                handleActionBaz(param1, param2);
-            } else if (ACTION_INSERT.equals(action)) {
-                final String[] pics_path_param = intent.getStringArrayExtra(PICS_PATH_PARAM);
+            if (ACTION_INSERT.equals(action)) {
+                final List<String> pics_path_param = intent.getStringArrayListExtra(PICS_PATH_PARAM);
                 handleActionInsert(pics_path_param);
             }
         }
     }
 
     /**
-     * Handle action Foo in the provided background thread with the provided
+     * Handle action Insert in the provided background thread with the provided
      * parameters.
      */
-    private void handleActionFoo(String param1, String param2) {
-        // TODO: Handle action Foo
-        throw new UnsupportedOperationException("Not yet implemented");
-    }
-
-    /**
-     * Handle action Baz in the provided background thread with the provided
-     * parameters.
-     */
-    private void handleActionBaz(String param1, String param2) {
-        // TODO: Handle action Baz
-        throw new UnsupportedOperationException("Not yet implemented");
-    }
-
-    private void handleActionInsert(String[] paths) {
-        PicEntityDBManager.getInstance().insert(Arrays.asList(paths));
+    private void handleActionInsert(List<String> paths) {
+        PicEntityDBManager.getInstance().insert(paths);
     }
 }
