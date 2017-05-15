@@ -1,6 +1,7 @@
 package com.example.cloudyclient.activity;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
@@ -107,7 +108,11 @@ public class PicMainActivity extends AppCompatActivity {
         mPicPath = intent.getStringExtra("pic_path");
 
         showImg.enable();
-        Picasso.with(this).load(new File(mPicPath)).into(showImg);
+        Picasso
+                .with(this)
+                .load(new File(mPicPath))
+                .config(Bitmap.Config.RGB_565)
+                .into(showImg);
     }
 
     private void showData() {
