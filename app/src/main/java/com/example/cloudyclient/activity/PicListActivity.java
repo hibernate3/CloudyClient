@@ -1,29 +1,24 @@
 package com.example.cloudyclient.activity;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.OrientationHelper;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.StaggeredGridLayoutManager;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
-import android.widget.AdapterView;
 import android.widget.FrameLayout;
-import android.widget.GridView;
 import android.widget.ImageView;
 
-import com.example.cloudyclient.MainApplication;
 import com.example.cloudyclient.R;
 import com.example.cloudyclient.model.bean.PicEntity;
+import com.example.cloudyclient.util.ScreenPropUtil;
 import com.example.photoview.Info;
 import com.example.photoview.PhotoView;
 import com.squareup.picasso.Callback;
@@ -46,7 +41,7 @@ public class PicListActivity extends AppCompatActivity {
     @BindView(R.id.show_canvas)
     FrameLayout showCanvas;
 
-    Info mInfo;
+    Info photoViewInfo;
 
     AlphaAnimation in = new AlphaAnimation(0, 1);
     AlphaAnimation out = new AlphaAnimation(1, 0);
@@ -98,7 +93,7 @@ public class PicListActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 showBg.startAnimation(out);
-                showImg.animaTo(mInfo, new Runnable() {
+                showImg.animaTo(photoViewInfo, new Runnable() {
                     @Override
                     public void run() {
                         showCanvas.setVisibility(View.GONE);
@@ -124,27 +119,15 @@ public class PicListActivity extends AppCompatActivity {
 
         @Override
         public void onBindViewHolder(PicItemViewHolder holder, int position) {
-            Log.d(MainApplication.TAG, "" + (int) (getResources().getDisplayMetrics().density * 150));
-            if (position == 0) {
-                Picasso
-                        .with(context)
-                        .load(new File(mPicEntities.get(position).getFileName()))
-                        .placeholder(R.mipmap.ic_launcher)
-                        .error(R.mipmap.ic_launcher)
-                        .noFade()
-//                        .resize(600, 600)
-                        .into(holder.photoView);
-            } else {
-                Picasso
-                        .with(context)
-                        .load(new File(mPicEntities.get(position).getFileName()))
-                        .placeholder(R.mipmap.ic_launcher)
-                        .error(R.mipmap.ic_launcher)
-                        .noFade()
-                        .resize((int) (getResources().getDisplayMetrics().density * 150), (int) (getResources()
-                                .getDisplayMetrics().density * 150))
-                        .into(holder.photoView);
-            }
+            Picasso
+                    .with(context)
+                    .load(new File(mPicEntities.get(position).getFileName()))
+                    .placeholder(R.mipmap.ic_launcher)
+                    .error(R.mipmap.ic_launcher)
+                    .noFade()
+                    .config(Bitmap.Config.RGB_565)
+                    .fit()
+                    .into(holder.photoView);
 
         }
 
@@ -163,21 +146,28 @@ public class PicListActivity extends AppCompatActivity {
                 super(itemView);
                 ButterKnife.bind(this, itemView);
 
+                //设置单个CardView的高度
+                RecyclerView.LayoutParams param = (RecyclerView.LayoutParams) cvItemCard.getLayoutParams();
+                param.height = (ScreenPropUtil.screenWidth_px / 2 - param.getMarginStart() - param.getMarginEnd());
+                cvItemCard.setLayoutParams(param);
+
                 itemView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        mInfo = photoView.getInfo();//获取原始图片的信息
+                        photoViewInfo = photoView.getInfo();//获取原始图片的信息
 
+                        //显示大图
                         Picasso
                                 .with(context)
                                 .load(new File(mPicEntities.get(getLayoutPosition()).getFileName()))
+                                .config(Bitmap.Config.RGB_565)
                                 .into(showImg, new Callback() {
                                     @Override
                                     public void onSuccess() {
                                         showCanvas.startAnimation(in);
                                         showBg.setVisibility(View.VISIBLE);
                                         showCanvas.setVisibility(View.VISIBLE);
-                                        showImg.animaFrom(mInfo);
+                                        showImg.animaFrom(photoViewInfo);
                                     }
 
                                     @Override
@@ -201,7 +191,7 @@ public class PicListActivity extends AppCompatActivity {
     public void onBackPressed() {
         if (showCanvas.getVisibility() == View.VISIBLE) {
             showBg.startAnimation(out);
-            showImg.animaTo(mInfo, new Runnable() {
+            showImg.animaTo(photoViewInfo, new Runnable() {
                 @Override
                 public void run() {
                     showCanvas.setVisibility(View.GONE);
