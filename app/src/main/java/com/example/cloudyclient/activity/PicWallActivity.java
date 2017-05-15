@@ -2,11 +2,13 @@ package com.example.cloudyclient.activity;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.media.ExifInterface;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -25,6 +27,7 @@ import com.example.cloudyclient.MainApplication;
 import com.example.cloudyclient.R;
 import com.example.cloudyclient.model.bean.PicEntity;
 import com.example.cloudyclient.util.LocalStorageUtil;
+import com.example.cloudyclient.util.ScreenPropUtil;
 import com.example.photoview.Info;
 import com.example.photoview.PhotoView;
 import com.squareup.picasso.Callback;
@@ -146,11 +149,13 @@ public class PicWallActivity extends AppCompatActivity {
                     .load(new File(data.get(position)))
                     .placeholder(R.mipmap.ic_launcher)
                     .error(R.mipmap.ic_launcher)
+                    .config(Bitmap.Config.RGB_565)
                     .noFade()
-                    .resize(600, 400).centerInside()
+                    .fit()
                     .into(holder.photoView);
 
-            holder.textView.setText(picEntity.getFMake());
+            holder.textView.setText(picEntity.getFMake() + "\r\r\r光圈:" + picEntity.getFFNumber() +
+                    "\r\r\r快门:" + picEntity.getFExposureTime());
         }
 
         @Override
@@ -164,6 +169,8 @@ public class PicWallActivity extends AppCompatActivity {
         }
 
         class PicItemViewHolder extends RecyclerView.ViewHolder {
+            @BindView(R.id.cv_item_card)
+            CardView cvItemCard;
             @BindView(R.id.image_view)
             PhotoView photoView;
             @BindView(R.id.text_view)
@@ -173,15 +180,23 @@ public class PicWallActivity extends AppCompatActivity {
                 super(itemView);
                 ButterKnife.bind(this, itemView);
 
+                //设置单个CardView的高度
+                RecyclerView.LayoutParams param = (RecyclerView.LayoutParams) cvItemCard.getLayoutParams();
+                param.height = ScreenPropUtil.screenWidth_px * 3 / 4 - param.getMarginStart() - param
+                        .getMarginEnd();
+                cvItemCard.setLayoutParams(param);
+
                 itemView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
                         toolbar.setVisibility(View.GONE);//隐去toolbar
                         photoViewInfo = photoView.getInfo();//获取原始图片的信息
 
+                        //显示大图
                         Picasso
                                 .with(context)
                                 .load(new File(data.get(getLayoutPosition())))
+                                .config(Bitmap.Config.RGB_565)
                                 .into(showImg, new Callback() {
                                     @Override
                                     public void onSuccess() {

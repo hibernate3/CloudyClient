@@ -22,6 +22,7 @@ import com.example.cloudyclient.util.ScreenPropUtil;
 import com.example.photoview.Info;
 import com.example.photoview.PhotoView;
 import com.squareup.picasso.Callback;
+import com.squareup.picasso.MemoryPolicy;
 import com.squareup.picasso.Picasso;
 
 import java.io.File;
@@ -148,7 +149,8 @@ public class PicListActivity extends AppCompatActivity {
 
                 //设置单个CardView的高度
                 RecyclerView.LayoutParams param = (RecyclerView.LayoutParams) cvItemCard.getLayoutParams();
-                param.height = (ScreenPropUtil.screenWidth_px / 2 - param.getMarginStart() - param.getMarginEnd());
+                param.height = (ScreenPropUtil.screenWidth_px / 2
+                        - param.getMarginStart() - param.getMarginEnd()) * 3 / 4;
                 cvItemCard.setLayoutParams(param);
 
                 itemView.setOnClickListener(new View.OnClickListener() {
