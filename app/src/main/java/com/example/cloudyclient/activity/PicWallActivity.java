@@ -3,17 +3,14 @@ package com.example.cloudyclient.activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.media.ExifInterface;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,7 +20,6 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.example.cloudyclient.MainApplication;
 import com.example.cloudyclient.R;
 import com.example.cloudyclient.activity.dialog.PicSearchDialog;
 import com.example.cloudyclient.model.bean.PicEntity;
@@ -35,16 +31,18 @@ import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 public class PicWallActivity extends AppCompatActivity {
 
     @BindView(R.id.toolbar)
     Toolbar toolbar;
+    @BindView(R.id.fab)
+    FloatingActionButton fab;
     @BindView(R.id.pic_wall_rv)
     RecyclerView picWallRv;
     @BindView(R.id.show_bg)
@@ -72,18 +70,11 @@ public class PicWallActivity extends AppCompatActivity {
         setContentView(R.layout.activity_pic_wall);
         ButterKnife.bind(this);
 
+        initView();
+    }
+
+    private void initView() {
         setSupportActionBar(toolbar);//工具栏
-
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-//                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-//                        .setAction("Action", null).show();
-
-                new PicSearchDialog().show(getFragmentManager(), "");
-            }
-        });
 
         picWallRv.setLayoutManager(new LinearLayoutManager(this));
         picWallRv.setAdapter(mAdapter = new PicWallAdapter(this));
@@ -109,9 +100,16 @@ public class PicWallActivity extends AppCompatActivity {
         });
 
         showImg.enable();
-        showImg.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+    }
+
+    @OnClick({R.id.fab, R.id.show_img})
+    public void onViewClicked(View view) {
+        switch (view.getId()) {
+            case R.id.fab:
+                new PicSearchDialog().show(getFragmentManager(), "");
+
+                break;
+            case R.id.show_img:
                 showBg.startAnimation(out);
                 showImg.animaTo(photoViewInfo, new Runnable() {
                     @Override
@@ -120,8 +118,12 @@ public class PicWallActivity extends AppCompatActivity {
                         toolbar.setVisibility(View.VISIBLE);//恢复显示toolbar
                     }
                 });
-            }
-        });
+
+                break;
+            default:
+                break;
+        }
+
     }
 
     class PicWallAdapter extends RecyclerView.Adapter<PicWallAdapter.PicItemViewHolder> {

@@ -101,11 +101,18 @@ public class PicMainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_pic_main);
         ButterKnife.bind(this);
 
-        BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
-        navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
+        initData();
 
+        initView();
+    }
+
+    private void initData() {
         Intent intent = getIntent();
         mPicPath = intent.getStringExtra("pic_path");
+    }
+
+    private void initView() {
+        navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
         showImg.enable();
         Picasso
