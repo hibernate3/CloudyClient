@@ -25,6 +25,7 @@ import android.widget.TextView;
 
 import com.example.cloudyclient.MainApplication;
 import com.example.cloudyclient.R;
+import com.example.cloudyclient.activity.dialog.PicSearchDialog;
 import com.example.cloudyclient.model.bean.PicEntity;
 import com.example.cloudyclient.util.LocalStorageUtil;
 import com.example.cloudyclient.util.ScreenPropUtil;
@@ -77,8 +78,10 @@ public class PicWallActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+//                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+//                        .setAction("Action", null).show();
+
+                new PicSearchDialog().show(getFragmentManager(), "");
             }
         });
 
