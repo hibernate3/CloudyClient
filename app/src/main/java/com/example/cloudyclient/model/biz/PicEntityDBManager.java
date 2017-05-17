@@ -109,7 +109,9 @@ public class PicEntityDBManager {
             sql.append(" AND FFOCAL_LENGTH = '" + len + "'");
         }
 
-        sql.append(" AND FILE_NAME != '" + selfFileName + "'");//排除自己
+        if (!TextUtils.isEmpty(selfFileName)) {
+            sql.append(" AND FILE_NAME != '" + selfFileName + "'");//排除自己
+        }
 
         Log.d(MainApplication.TAG, sql.toString());
 

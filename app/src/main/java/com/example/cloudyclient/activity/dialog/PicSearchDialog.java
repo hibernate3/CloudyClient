@@ -4,6 +4,7 @@ import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.text.Editable;
 import android.text.InputFilter;
@@ -21,8 +22,13 @@ import android.widget.Switch;
 
 import com.example.cloudyclient.MainApplication;
 import com.example.cloudyclient.R;
+import com.example.cloudyclient.activity.PicWallActivity;
+import com.example.cloudyclient.model.bean.PicEntity;
+import com.example.cloudyclient.model.biz.PicEntityDBManager;
 
 import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -50,6 +56,14 @@ public class PicSearchDialog extends DialogFragment {
     private static final int DECIMAL_DIGITS_1 = 1;//小数的位数
     private static final int DECIMAL_DIGITS_2 = 2;//小数的位数
 
+    private PicWallActivity.PicWallAdapter mAdapter;
+    private FloatingActionButton mFab;
+
+    public PicSearchDialog(FloatingActionButton fab, PicWallActivity.PicWallAdapter adapter) {
+        this.mFab = fab;
+        this.mAdapter = adapter;
+    }
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle
@@ -76,11 +90,17 @@ public class PicSearchDialog extends DialogFragment {
                 if (dest.length() == 0 && source.equals(".")) {
                     return "0.";
                 }
+
                 String dValue = dest.toString();
                 String[] splitArray = dValue.split("\\.");
                 if (splitArray.length > 1) {
                     String dotValue = splitArray[1];
                     if (dotValue.length() == DECIMAL_DIGITS_1) {
+                        return "";
+                    }
+                } else {
+                    //确保整数部分不能超过2位
+                    if (dest.length() == 2 && !dest.toString().contains(".") && !source.equals(".")) {
                         return "";
                     }
                 }
@@ -101,11 +121,17 @@ public class PicSearchDialog extends DialogFragment {
                 if (dest.length() == 0 && source.equals(".")) {
                     return "0.";
                 }
+
                 String dValue = dest.toString();
                 String[] splitArray = dValue.split("\\.");
                 if (splitArray.length > 1) {
                     String dotValue = splitArray[1];
                     if (dotValue.length() == DECIMAL_DIGITS_1) {
+                        return "";
+                    }
+                } else {
+                    //确保整数部分不能超过4位
+                    if (dest.length() == 4 && !dest.toString().contains(".") && !source.equals(".")) {
                         return "";
                     }
                 }
@@ -124,6 +150,8 @@ public class PicSearchDialog extends DialogFragment {
                 // dstart:当前光标开始位置
                 // dent:当前光标结束位置
                 if (dest.length() == 0 && source.equals("0")) {
+                    return "";
+                } else if (dest.length() == 5) {
                     return "";
                 }
                 return null;
@@ -187,11 +215,33 @@ public class PicSearchDialog extends DialogFragment {
         }
 
         DecimalFormat df = new DecimalFormat("0.0");
-        aperture = df.format(Double.parseDouble(aperture));
-        exposure = exposureSwitch.isChecked() ?
-                "1/" + df.format(Double.parseDouble(exposure)) : df.format(Double.parseDouble(exposure));
+        if (!TextUtils.isEmpty(aperture)) {
+            aperture = df.format(Double.parseDouble(aperture));
+        }
 
-        Log.d(MainApplication.TAG, "aperture: " + aperture + "\nexposure: " + exposure + "\nISO: " + iso);
+        if (!TextUtils.isEmpty(exposure)) {
+            exposure = exposureSwitch.isChecked() ?
+                    "1/" + df.format(Double.parseDouble(exposure)) : df.format(Double.parseDouble(exposure));
+        }
+
+        List<PicEntity> result = PicEntityDBManager.getInstance().query(null, aperture, iso, exposure, null);
+
+        List<String> data = new ArrayList<>();
+        for (int i = 0; i < result.size(); i++) {
+            data.add(result.get(i).getFileName());
+        }
+
+        PicWallActivity.isFiltered = true;
+        mFab.setImageResource(android.R.drawable.ic_dialog_dialer);
+        mAdapter.setData(data);
+
+        dismiss();
+
+        StringBuffer sb = new StringBuffer("检索到" + data.size() + "张照片");
+        sb.append(TextUtils.isEmpty(aperture) ? "" : "\r\r|\r光圈:" + aperture);
+        sb.append(TextUtils.isEmpty(exposure) ? "" : "\r\r快门:" + exposure);
+        sb.append(TextUtils.isEmpty(iso) ? "" : "\r\rISO:" + iso);
+        Snackbar.make(mFab, sb.toString(), Snackbar.LENGTH_INDEFINITE).show();
     }
 }
 

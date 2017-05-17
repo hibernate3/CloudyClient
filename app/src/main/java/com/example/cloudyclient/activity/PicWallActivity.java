@@ -5,12 +5,14 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,6 +22,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.cloudyclient.MainApplication;
 import com.example.cloudyclient.R;
 import com.example.cloudyclient.activity.dialog.PicSearchDialog;
 import com.example.cloudyclient.model.bean.PicEntity;
@@ -61,8 +64,10 @@ public class PicWallActivity extends AppCompatActivity {
     private final int TO_PIC_MAIN = 0;
     private PicEntity picEntity = null;
 
-    private RecyclerView.Adapter mAdapter;
+    private PicWallAdapter mAdapter;
     private RecyclerView.ViewHolder mViewHolder;
+
+    public static boolean isFiltered = false;//照片是否被检索过滤
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -106,8 +111,11 @@ public class PicWallActivity extends AppCompatActivity {
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.fab:
-                new PicSearchDialog().show(getFragmentManager(), "");
-
+                if (!isFiltered) {
+                    new PicSearchDialog(fab, mAdapter).show(getFragmentManager(), "");
+                } else {
+                    abandonFilter();
+                }
                 break;
             case R.id.show_img:
                 showBg.startAnimation(out);
@@ -126,17 +134,16 @@ public class PicWallActivity extends AppCompatActivity {
 
     }
 
-    class PicWallAdapter extends RecyclerView.Adapter<PicWallAdapter.PicItemViewHolder> {
+    public class PicWallAdapter extends RecyclerView.Adapter<PicWallAdapter.PicItemViewHolder> {
         private final LayoutInflater layoutInflater;
         private Context context;
         private List<String> data;
 
         public PicWallAdapter(Context context) {
-            data = LocalStorageUtil.getAllPicPath();
+            data = LocalStorageUtil.getAllPicPath();//默认夹在目录下所有照片
             this.context = context;
             layoutInflater = LayoutInflater.from(context);
         }
-
 
         @Override
         public PicItemViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -159,8 +166,9 @@ public class PicWallActivity extends AppCompatActivity {
                     .fit()
                     .into(holder.photoView);
 
-            holder.textView.setText(picEntity.getFMake() + "\r\r\r光圈:" + picEntity.getFFNumber() +
-                    "\r\r\r快门:" + picEntity.getFExposureTime());
+            holder.textView.setText(picEntity.getFMake() + "\r\r\r光圈:" + picEntity.getFFNumber()
+                    + "\r\r\r快门:" + picEntity.getFExposureTime()
+                    + "\r\r\rISO:" + picEntity.getFISOSpeedRatings());
         }
 
         @Override
@@ -231,6 +239,11 @@ public class PicWallActivity extends AppCompatActivity {
                 });
             }
         }
+
+        public void setData(List<String> data) {
+            this.data = data;
+            notifyDataSetChanged();
+        }
     }
 
     @Override
@@ -243,9 +256,19 @@ public class PicWallActivity extends AppCompatActivity {
                     showCanvas.setVisibility(View.GONE);
                 }
             });
+        } else if(isFiltered) {
+            abandonFilter();
         } else {
             super.onBackPressed();
         }
+    }
+
+    //取消过滤
+    private void abandonFilter() {
+        isFiltered = false;
+        mAdapter.setData(LocalStorageUtil.getAllPicPath());
+        fab.setImageResource(android.R.drawable.ic_menu_search);
+        Snackbar.make(fab, "已显示所有照片", Snackbar.LENGTH_LONG).show();
     }
 
     @Override
