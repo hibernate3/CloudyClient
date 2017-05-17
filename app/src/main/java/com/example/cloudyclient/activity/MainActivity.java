@@ -11,10 +11,12 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.cloudyclient.MainApplication;
 import com.example.cloudyclient.R;
 import com.example.cloudyclient.service.PicDBService;
 import com.example.cloudyclient.util.LocalStorageUtil;
@@ -40,6 +42,8 @@ public class MainActivity extends AppCompatActivity {
 
     private boolean isNeverAsk = false;
 
+    private final int TO_PIC_WALL = 0;//activity跳转标识
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,7 +54,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-
         MainActivityPermissionsDispatcher.requestPermissionWithCheck(this);
     }
 
@@ -66,7 +69,8 @@ public class MainActivity extends AppCompatActivity {
     void requestPermission() {
         PicDBService.startActionInsert(MainActivity.this, LocalStorageUtil.getAllPicPath());//遍历图片数据，写入数据库
 
-        startActivity(new Intent(MainActivity.this, PicWallActivity.class));
+        Intent intent = new Intent(MainActivity.this, PicWallActivity.class);
+        startActivityForResult(intent, TO_PIC_WALL);
     }
 
     @OnShowRationale({Manifest.permission.READ_EXTERNAL_STORAGE})
@@ -125,5 +129,15 @@ public class MainActivity extends AppCompatActivity {
             localIntent.putExtra("com.android.settings.ApplicationPkgName", getPackageName());
         }
         startActivity(localIntent);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == RESULT_OK) {
+            if (requestCode == TO_PIC_WALL) {//从PicWallActivity返回的情况
+                finish();
+            }
+        }
     }
 }

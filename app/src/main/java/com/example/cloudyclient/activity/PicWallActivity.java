@@ -259,6 +259,7 @@ public class PicWallActivity extends AppCompatActivity {
         } else if(isFiltered) {
             abandonFilter();
         } else {
+            setResult(RESULT_OK);
             super.onBackPressed();
         }
     }
