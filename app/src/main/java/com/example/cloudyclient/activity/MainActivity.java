@@ -11,16 +11,13 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
+import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.example.cloudyclient.MainApplication;
 import com.example.cloudyclient.R;
 import com.example.cloudyclient.service.PicDBService;
 import com.example.cloudyclient.util.LocalStorageUtil;
-import com.example.cloudyclient.util.ToastUtil;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -69,6 +66,9 @@ public class MainActivity extends AppCompatActivity {
     void requestPermission() {
         PicDBService.startActionInsert(MainActivity.this, LocalStorageUtil.getAllPicPath());//遍历图片数据，写入数据库
 
+        grantBtn.setVisibility(View.GONE);
+        noticeTv.setVisibility(View.GONE);
+
         Intent intent = new Intent(MainActivity.this, PicWallActivity.class);
         startActivityForResult(intent, TO_PIC_WALL);
     }
@@ -80,12 +80,16 @@ public class MainActivity extends AppCompatActivity {
 
     @OnPermissionDenied({Manifest.permission.READ_EXTERNAL_STORAGE})
     void permissionDenied() {
+        grantBtn.setVisibility(View.VISIBLE);
+        noticeTv.setVisibility(View.VISIBLE);
         noticeTv.setText(R.string.permission_denied);
     }
 
     @OnNeverAskAgain({Manifest.permission.READ_EXTERNAL_STORAGE})
     void neverAskAgain() {
         isNeverAsk = true;
+        grantBtn.setVisibility(View.VISIBLE);
+        noticeTv.setVisibility(View.VISIBLE);
         noticeTv.setText(R.string.permission_never_askagain);
     }
 
@@ -125,7 +129,7 @@ public class MainActivity extends AppCompatActivity {
             localIntent.setData(Uri.fromParts("package", getPackageName(), null));
         } else if (Build.VERSION.SDK_INT <= 8) {
             localIntent.setAction(Intent.ACTION_VIEW);
-            localIntent.setClassName("com.android.settings","com.android.settings.InstalledAppDetails");
+            localIntent.setClassName("com.android.settings", "com.android.settings.InstalledAppDetails");
             localIntent.putExtra("com.android.settings.ApplicationPkgName", getPackageName());
         }
         startActivity(localIntent);
