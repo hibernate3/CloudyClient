@@ -69,7 +69,9 @@ public class MainActivity extends AppCompatActivity {
         grantBtn.setVisibility(View.GONE);
         noticeTv.setVisibility(View.GONE);
 
-        Intent intent = new Intent(MainActivity.this, PicWallActivity.class);
+//        Intent intent = new Intent(MainActivity.this, PicWallActivity.class);
+//        startActivityForResult(intent, TO_PIC_WALL);
+        Intent intent = new Intent(MainActivity.this, PicSyncActivity.class);
         startActivityForResult(intent, TO_PIC_WALL);
     }
 

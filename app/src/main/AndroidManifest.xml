@@ -26,21 +26,26 @@
             android:name=".activity.PicWallActivity"
             android:label="@string/title_activity_pic_wall"
             android:launchMode="singleTask"
-            android:theme="@style/AppTheme.NoActionBar"/>
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".activity.PicMainActivity"
             android:label="@string/title_activity_pic_main"
             android:launchMode="singleInstance"
-            android:process=":picture_main"/>
+            android:process=":picture_main" />
         <activity
             android:name=".activity.PicListActivity"
             android:label="@string/title_activity_pic_list"
             android:launchMode="singleInstance"
-            android:process=":picture_list"/>
+            android:process=":picture_list" />
+
+        <activity
+            android:name=".activity.PicSyncActivity"
+            android:launchMode="singleTask"/>
 
         <service
             android:name=".service.PicDBService"
-            android:exported="false"/>
+            android:exported="false" />
+
     </application>
 
 </manifest>
