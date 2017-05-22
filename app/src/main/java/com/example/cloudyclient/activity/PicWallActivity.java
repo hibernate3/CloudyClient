@@ -9,11 +9,16 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.OrientationHelper;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AlphaAnimation;
@@ -28,6 +33,7 @@ import com.example.cloudyclient.activity.dialog.PicSearchDialog;
 import com.example.cloudyclient.model.bean.PicEntity;
 import com.example.cloudyclient.util.LocalStorageUtil;
 import com.example.cloudyclient.util.ScreenPropUtil;
+import com.example.cloudyclient.util.ToastUtil;
 import com.example.photoview.Info;
 import com.example.photoview.PhotoView;
 import com.squareup.picasso.Callback;
@@ -57,6 +63,13 @@ public class PicWallActivity extends AppCompatActivity {
 
     Info photoViewInfo;//图片位置尺寸信息
 
+    private enum WALL_VIEW_TYPE_ENUM {
+        TYPE_1_COLUMN,//单列
+        TYPE_2_COLUMN//双列
+    }
+
+    private int wallViewType = WALL_VIEW_TYPE_ENUM.TYPE_1_COLUMN.ordinal();
+
     //动画效果
     AlphaAnimation in = new AlphaAnimation(0, 1);
     AlphaAnimation out = new AlphaAnimation(1, 0);
@@ -80,6 +93,19 @@ public class PicWallActivity extends AppCompatActivity {
 
     private void initView() {
         setSupportActionBar(toolbar);//工具栏
+        toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                switch (item.getItemId()) {
+                    case R.id.menu_action_sync:
+                        break;
+                    case R.id.menu_action_switch:
+                        switchWallView();
+                        break;
+                }
+                return true;
+            }
+        });
 
         picWallRv.setLayoutManager(new LinearLayoutManager(this));
         picWallRv.setAdapter(mAdapter = new PicWallAdapter(this));
@@ -194,10 +220,24 @@ public class PicWallActivity extends AppCompatActivity {
                 ButterKnife.bind(this, itemView);
 
                 //设置单个CardView的高度
-                RecyclerView.LayoutParams param = (RecyclerView.LayoutParams) cvItemCard.getLayoutParams();
-                param.height = ScreenPropUtil.screenWidth_px * 3 / 4 - param.getMarginStart() - param
-                        .getMarginEnd();
-                cvItemCard.setLayoutParams(param);
+                if (wallViewType == WALL_VIEW_TYPE_ENUM.TYPE_1_COLUMN.ordinal()) {
+
+                    RecyclerView.LayoutParams param = (RecyclerView.LayoutParams) cvItemCard
+                            .getLayoutParams();
+
+                    param.height = ScreenPropUtil.screenWidth_px * 3 / 4 - param.getMarginStart() - param
+                            .getMarginEnd();
+
+                    cvItemCard.setLayoutParams(param);
+                } else if (wallViewType == WALL_VIEW_TYPE_ENUM.TYPE_2_COLUMN.ordinal()) {
+                    RecyclerView.LayoutParams param = (RecyclerView.LayoutParams) cvItemCard
+                            .getLayoutParams();
+
+                    param.height = ScreenPropUtil.screenWidth_px / 2 - param.getMarginStart() - param
+                            .getMarginEnd();
+
+                    cvItemCard.setLayoutParams(param);
+                }
 
                 itemView.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -246,6 +286,36 @@ public class PicWallActivity extends AppCompatActivity {
         }
     }
 
+    //取消过滤
+    private void abandonFilter() {
+        isFiltered = false;
+        mAdapter.setData(LocalStorageUtil.getAllPicPath());
+        fab.setImageResource(android.R.drawable.ic_menu_search);
+        ToastUtil.showToast(PicWallActivity.this, "已显示所有照片");
+        Snackbar.make(fab, "已显示所有照片", Snackbar.LENGTH_LONG).show();
+    }
+
+    private void switchWallView() {
+        if (wallViewType == WALL_VIEW_TYPE_ENUM.TYPE_1_COLUMN.ordinal()) {
+            wallViewType = WALL_VIEW_TYPE_ENUM.TYPE_2_COLUMN.ordinal();
+
+//            picWallRv.setLayoutManager(new GridLayoutManager(PicWallActivity.this, 2));
+            picWallRv.setLayoutManager(new StaggeredGridLayoutManager(2, OrientationHelper
+                    .VERTICAL));
+            picWallRv.setAdapter(mAdapter);
+        } else {
+            wallViewType = WALL_VIEW_TYPE_ENUM.TYPE_1_COLUMN.ordinal();
+            picWallRv.setLayoutManager(new LinearLayoutManager(this));
+            picWallRv.setAdapter(mAdapter);
+        }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_pic_wall, menu);
+        return true;
+    }
+
     @Override
     public void onBackPressed() {
         if (showCanvas.getVisibility() == View.VISIBLE) {
@@ -256,20 +326,12 @@ public class PicWallActivity extends AppCompatActivity {
                     showCanvas.setVisibility(View.GONE);
                 }
             });
-        } else if(isFiltered) {
+        } else if (isFiltered) {
             abandonFilter();
         } else {
             setResult(RESULT_OK);
             super.onBackPressed();
         }
-    }
-
-    //取消过滤
-    private void abandonFilter() {
-        isFiltered = false;
-        mAdapter.setData(LocalStorageUtil.getAllPicPath());
-        fab.setImageResource(android.R.drawable.ic_menu_search);
-        Snackbar.make(fab, "已显示所有照片", Snackbar.LENGTH_LONG).show();
     }
 
     @Override
