@@ -66,7 +66,7 @@ public class MainActivity extends AppCompatActivity {
         MainActivityPermissionsDispatcher.onRequestPermissionsResult(this, requestCode, grantResults);
     }
 
-    @NeedsPermission({Manifest.permission.READ_EXTERNAL_STORAGE})
+    @NeedsPermission({Manifest.permission.WRITE_EXTERNAL_STORAGE})
     void requestPermission() {
         PicDBService.startActionInsert(MainActivity.this, LocalStorageManager.getAllPicPath());//遍历图片数据，写入数据库
 
@@ -75,23 +75,24 @@ public class MainActivity extends AppCompatActivity {
 
         Intent intent = new Intent(MainActivity.this, PicWallActivity.class);
         startActivityForResult(intent, TO_PIC_WALL);
+
 //        Intent intent = new Intent(MainActivity.this, PicSyncActivity.class);
 //        startActivityForResult(intent, TO_PIC_WALL);
     }
 
-    @OnShowRationale({Manifest.permission.READ_EXTERNAL_STORAGE})
+    @OnShowRationale({Manifest.permission.WRITE_EXTERNAL_STORAGE})
     void showRationale(PermissionRequest request) {
         showRationaleDialog(R.string.permission_rationale, request);
     }
 
-    @OnPermissionDenied({Manifest.permission.READ_EXTERNAL_STORAGE})
+    @OnPermissionDenied({Manifest.permission.WRITE_EXTERNAL_STORAGE})
     void permissionDenied() {
         grantBtn.setVisibility(View.VISIBLE);
         noticeTv.setVisibility(View.VISIBLE);
         noticeTv.setText(R.string.permission_denied);
     }
 
-    @OnNeverAskAgain({Manifest.permission.READ_EXTERNAL_STORAGE})
+    @OnNeverAskAgain({Manifest.permission.WRITE_EXTERNAL_STORAGE})
     void neverAskAgain() {
         isNeverAsk = true;
         grantBtn.setVisibility(View.VISIBLE);
@@ -142,8 +143,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
+    protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
+        super.onActivityResult(requestCode, resultCode, intent);
+
         if (resultCode == RESULT_OK) {
             if (requestCode == TO_PIC_WALL) {//从PicWallActivity返回的情况
                 finish();

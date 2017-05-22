@@ -41,9 +41,9 @@ public class LocalStorageManager {
     //删除本地照片
     public static void deletePhoto(String path) {
         File file = new File(path);
-        Log.e(MainApplication.TAG, path);
         if (file.exists() && file.isFile()) {
             boolean result = file.delete();
+            Log.d(MainApplication.TAG, "删除照片: " + path + " , 结果: " + result);
         }
     }
 }

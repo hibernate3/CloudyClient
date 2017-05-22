@@ -65,14 +65,18 @@ public class PicWallActivity extends AppCompatActivity {
         TYPE_2_COLUMN//双列
     }
 
-    private int wallViewType = WALL_VIEW_TYPE_ENUM.TYPE_1_COLUMN.ordinal();
+    private int wallViewType = WALL_VIEW_TYPE_ENUM.TYPE_1_COLUMN.ordinal();//照片墙视图类型
 
     //动画效果
     AlphaAnimation in = new AlphaAnimation(0, 1);
     AlphaAnimation out = new AlphaAnimation(1, 0);
 
-    private final int TO_PIC_MAIN = 0;
-    private PicEntity picEntity = null;
+    private final int ACTIVITY_REQUEST_PIC_MAIN = 0;//跳转到PicMainActivity的requestCode
+    public static final String INTENT_TAG_PIC_PATH = "pic_path";
+    public static final String INTENT_TAG_POSITION = "position";
+
+
+    private PicEntity mPicEntity = null;
 
     private PicWallAdapter mAdapter;
     private RecyclerView.ViewHolder mViewHolder;
@@ -178,7 +182,7 @@ public class PicWallActivity extends AppCompatActivity {
             mViewHolder = holder;
 
             Picasso picasso = Picasso.with(context);
-            picEntity = new PicEntity(data.get(position));
+            mPicEntity = new PicEntity(data.get(position));
 
             picasso
                     .load(new File(data.get(position)))
@@ -189,9 +193,9 @@ public class PicWallActivity extends AppCompatActivity {
                     .fit()
                     .into(holder.photoView);
 
-            holder.textView.setText(picEntity.getFMake() + "\r\r\r光圈:" + picEntity.getFFNumber()
-                    + "\r\r\r快门:" + picEntity.getFExposureTime()
-                    + "\r\r\rISO:" + picEntity.getFISOSpeedRatings());
+            holder.textView.setText(mPicEntity.getFMake() + "\r\r\r光圈:" + mPicEntity.getFFNumber()
+                    + "\r\r\r快门:" + mPicEntity.getFExposureTime()
+                    + "\r\r\rISO:" + mPicEntity.getFISOSpeedRatings());
         }
 
         @Override
@@ -268,9 +272,10 @@ public class PicWallActivity extends AppCompatActivity {
                     @Override
                     public boolean onLongClick(View v) {
                         Intent intent = new Intent(context, PicMainActivity.class);
-                        intent.putExtra("pic_path", data.get(getLayoutPosition()));
+                        intent.putExtra(INTENT_TAG_PIC_PATH, data.get(getLayoutPosition()));
+                        intent.putExtra(INTENT_TAG_POSITION, getLayoutPosition());
 
-                        startActivityForResult(intent, TO_PIC_MAIN);
+                        startActivityForResult(intent, ACTIVITY_REQUEST_PIC_MAIN);
                         return true;
                     }
                 });
@@ -280,6 +285,11 @@ public class PicWallActivity extends AppCompatActivity {
         public void setData(List<String> data) {
             this.data = data;
             notifyDataSetChanged();
+        }
+
+        public void removeItem(int position) {
+            this.data.remove(position);
+            notifyItemRemoved(position);
         }
     }
 
@@ -334,8 +344,14 @@ public class PicWallActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == RESULT_OK) {
-            if (requestCode == TO_PIC_MAIN) {
+
+        if (requestCode == ACTIVITY_REQUEST_PIC_MAIN) {
+            //有删除行为的返回:ACTIVITY_RESULT_DELETE
+            if (resultCode == PicMainActivity.ACTIVITY_RESULT_DELETE) {
+
+                int deletedPos = data.getIntExtra(INTENT_TAG_POSITION, 0);
+
+                mAdapter.removeItem(deletedPos);
             }
         }
     }

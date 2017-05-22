@@ -74,6 +74,8 @@ public class PicMainActivity extends AppCompatActivity {
     @BindView(R.id.toolbar)
     Toolbar toolbar;
 
+    public static final int ACTIVITY_RESULT_DELETE = 2;//删除行为的resultCode
+
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
 
@@ -98,6 +100,7 @@ public class PicMainActivity extends AppCompatActivity {
     };
 
     private String mPicPath;//文件名（含完整路径）
+    private int mPosition;//在PicWall视图中的position
     private PicEntity mPicEntity;
 
     @Override
@@ -113,7 +116,8 @@ public class PicMainActivity extends AppCompatActivity {
 
     private void initData() {
         Intent intent = getIntent();
-        mPicPath = intent.getStringExtra("pic_path");
+        mPicPath = intent.getStringExtra(PicWallActivity.INTENT_TAG_PIC_PATH);
+        mPosition = intent.getIntExtra(PicWallActivity.INTENT_TAG_POSITION, 0);
     }
 
     private void initView() {
@@ -130,6 +134,11 @@ public class PicMainActivity extends AppCompatActivity {
                                     @Override
                                     public void onClick(DialogInterface dialog, int which) {
                                         LocalStorageManager.deletePhoto(mPicPath);
+
+                                        Intent intent = new Intent();
+                                        intent.putExtra(PicWallActivity.INTENT_TAG_POSITION, mPosition);
+                                        setResult(ACTIVITY_RESULT_DELETE, intent);
+
                                         finish();
                                     }
                                 })
