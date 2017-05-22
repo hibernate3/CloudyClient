@@ -1,13 +1,17 @@
 package com.example.cloudyclient.activity;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -19,15 +23,15 @@ import android.widget.TextView;
 import com.example.cloudyclient.MainApplication;
 import com.example.cloudyclient.R;
 import com.example.cloudyclient.model.bean.PicEntity;
+import com.example.cloudyclient.model.biz.LocalStorageManager;
 import com.example.cloudyclient.model.biz.PicEntityDBManager;
-import com.example.cloudyclient.util.ToastUtil;
+import com.example.cloudyclient.model.biz.ToastUtil;
 import com.example.photoview.PhotoView;
 import com.squareup.picasso.Picasso;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -35,7 +39,6 @@ import butterknife.OnClick;
 import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
 import io.reactivex.ObservableOnSubscribe;
-import io.reactivex.ObservableSource;
 import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
@@ -68,6 +71,8 @@ public class PicMainActivity extends AppCompatActivity {
     BottomNavigationView navigation;
     @BindView(R.id.container)
     LinearLayout container;
+    @BindView(R.id.toolbar)
+    Toolbar toolbar;
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -113,6 +118,28 @@ public class PicMainActivity extends AppCompatActivity {
 
     private void initView() {
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
+        setSupportActionBar(toolbar);//工具栏
+        toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                switch (item.getItemId()) {
+                    case R.id.menu_action_delete:
+                        new AlertDialog.Builder(PicMainActivity.this)
+                                .setMessage("确认是否删除此张照片？")
+                                .setPositiveButton("是", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        LocalStorageManager.deletePhoto(mPicPath);
+                                        finish();
+                                    }
+                                })
+                                .setNegativeButton("否", null).show();
+                        break;
+                }
+
+                return true;
+            }
+        });
 
         showImg.enable();
         Picasso
@@ -239,6 +266,12 @@ public class PicMainActivity extends AppCompatActivity {
         Intent intent = new Intent(PicMainActivity.this, PicListActivity.class);
         intent.putParcelableArrayListExtra("pic_entities", (ArrayList<? extends Parcelable>) picEntities);
         startActivity(intent);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_pic_main, menu);
+        return true;
     }
 
     @Override

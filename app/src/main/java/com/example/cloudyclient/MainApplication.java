@@ -2,12 +2,9 @@ package com.example.cloudyclient;
 
 import android.app.Application;
 import android.content.Context;
-import android.util.DisplayMetrics;
-import android.util.Log;
-import android.view.WindowManager;
 
 import com.example.cloudyclient.model.biz.GreenDaoManager;
-import com.example.cloudyclient.util.ScreenPropUtil;
+import com.example.cloudyclient.model.biz.ScreenPropManager;
 
 /**
  * Created by wangyuhang on 17-5-5.
@@ -25,7 +22,7 @@ public class MainApplication extends Application {
         mContext = getApplicationContext();
         GreenDaoManager.getInstance();
 
-        ScreenPropUtil.getAndroiodScreenProperty();
+        ScreenPropManager.getAndroiodScreenProperty();
     }
 
     public static Context getContext() {

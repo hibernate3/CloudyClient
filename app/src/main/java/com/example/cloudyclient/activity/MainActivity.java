@@ -11,13 +11,17 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.example.cloudyclient.MainApplication;
 import com.example.cloudyclient.R;
 import com.example.cloudyclient.service.PicDBService;
-import com.example.cloudyclient.util.LocalStorageUtil;
+import com.example.cloudyclient.model.biz.LocalStorageManager;
+
+import java.io.File;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -64,7 +68,7 @@ public class MainActivity extends AppCompatActivity {
 
     @NeedsPermission({Manifest.permission.READ_EXTERNAL_STORAGE})
     void requestPermission() {
-        PicDBService.startActionInsert(MainActivity.this, LocalStorageUtil.getAllPicPath());//遍历图片数据，写入数据库
+        PicDBService.startActionInsert(MainActivity.this, LocalStorageManager.getAllPicPath());//遍历图片数据，写入数据库
 
         grantBtn.setVisibility(View.GONE);
         noticeTv.setVisibility(View.GONE);

@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.cloudyclient">
+          package="com.example.cloudyclient">
 
-    <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
 
     <application
         android:name=".MainApplication"
@@ -17,26 +18,27 @@
             android:name=".activity.MainActivity"
             android:launchMode="singleTask">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+                <action android:name="android.intent.action.MAIN"/>
 
-                <category android:name="android.intent.category.LAUNCHER" />
+                <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
         <activity
             android:name=".activity.PicWallActivity"
             android:label="@string/title_activity_pic_wall"
             android:launchMode="singleTask"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:theme="@style/AppTheme.NoActionBar"/>
         <activity
             android:name=".activity.PicMainActivity"
             android:label="@string/title_activity_pic_main"
             android:launchMode="singleInstance"
-            android:process=":picture_main" />
+            android:process=":picture_main"
+            android:theme="@style/AppTheme.NoActionBar"/>
         <activity
             android:name=".activity.PicListActivity"
             android:label="@string/title_activity_pic_list"
             android:launchMode="singleInstance"
-            android:process=":picture_list" />
+            android:process=":picture_list"/>
 
         <activity
             android:name=".activity.PicSyncActivity"
@@ -44,7 +46,7 @@
 
         <service
             android:name=".service.PicDBService"
-            android:exported="false" />
+            android:exported="false"/>
 
     </application>
 

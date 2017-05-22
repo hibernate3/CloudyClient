@@ -1,4 +1,4 @@
-package com.example.cloudyclient.util;
+package com.example.cloudyclient.model.biz;
 
 import android.Manifest;
 import android.os.Environment;
@@ -17,7 +17,7 @@ import permissions.dispatcher.NeedsPermission;
  * Created by wangyuhang on 17-5-5.
  */
 
-public class LocalStorageUtil {
+public class LocalStorageManager {
 
     //获取本地图片的路径集合
     public static List<String> getAllPicPath() {
@@ -36,5 +36,14 @@ public class LocalStorageUtil {
         }
 
         return result;
+    }
+
+    //删除本地照片
+    public static void deletePhoto(String path) {
+        File file = new File(path);
+        Log.e(MainApplication.TAG, path);
+        if (file.exists() && file.isFile()) {
+            boolean result = file.delete();
+        }
     }
 }

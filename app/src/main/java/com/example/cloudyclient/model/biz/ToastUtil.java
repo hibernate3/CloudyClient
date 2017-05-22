@@ -1,4 +1,4 @@
-package com.example.cloudyclient.util;
+package com.example.cloudyclient.model.biz;
 
 import android.content.Context;
 import android.widget.Toast;

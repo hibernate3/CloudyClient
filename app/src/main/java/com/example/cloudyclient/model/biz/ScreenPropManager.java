@@ -1,4 +1,4 @@
-package com.example.cloudyclient.util;
+package com.example.cloudyclient.model.biz;
 
 import android.content.Context;
 import android.util.DisplayMetrics;
@@ -11,7 +11,7 @@ import com.example.cloudyclient.MainApplication;
  * Created by wangyuhang on 17-5-15.
  */
 
-public class ScreenPropUtil {
+public class ScreenPropManager {
     public static int screenWidth_dp;//单位dp
     public static int screenHeight_dp;//单位dp
     public static int screenWidth_px;//单位px

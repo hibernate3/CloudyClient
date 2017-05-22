@@ -1,11 +1,8 @@
 package com.example.cloudyclient.activity;
 
-import android.app.DialogFragment;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -22,11 +19,10 @@ import android.widget.ImageView;
 import com.example.cloudyclient.R;
 import com.example.cloudyclient.activity.dialog.PicDataDialog;
 import com.example.cloudyclient.model.bean.PicEntity;
-import com.example.cloudyclient.util.ScreenPropUtil;
+import com.example.cloudyclient.model.biz.ScreenPropManager;
 import com.example.photoview.Info;
 import com.example.photoview.PhotoView;
 import com.squareup.picasso.Callback;
-import com.squareup.picasso.MemoryPolicy;
 import com.squareup.picasso.Picasso;
 
 import java.io.File;
@@ -153,7 +149,7 @@ public class PicListActivity extends AppCompatActivity {
 
                 //设置单个CardView的高度
                 RecyclerView.LayoutParams param = (RecyclerView.LayoutParams) cvItemCard.getLayoutParams();
-                param.height = (ScreenPropUtil.screenWidth_px / 2
+                param.height = (ScreenPropManager.screenWidth_px / 2
                         - param.getMarginStart() - param.getMarginEnd()) * 3 / 4;
                 cvItemCard.setLayoutParams(param);
 

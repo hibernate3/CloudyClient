@@ -9,13 +9,11 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.DefaultItemAnimator;
-import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.OrientationHelper;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -27,13 +25,12 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.example.cloudyclient.MainApplication;
 import com.example.cloudyclient.R;
 import com.example.cloudyclient.activity.dialog.PicSearchDialog;
 import com.example.cloudyclient.model.bean.PicEntity;
-import com.example.cloudyclient.util.LocalStorageUtil;
-import com.example.cloudyclient.util.ScreenPropUtil;
-import com.example.cloudyclient.util.ToastUtil;
+import com.example.cloudyclient.model.biz.LocalStorageManager;
+import com.example.cloudyclient.model.biz.ScreenPropManager;
+import com.example.cloudyclient.model.biz.ToastUtil;
 import com.example.photoview.Info;
 import com.example.photoview.PhotoView;
 import com.squareup.picasso.Callback;
@@ -166,7 +163,7 @@ public class PicWallActivity extends AppCompatActivity {
         private List<String> data;
 
         public PicWallAdapter(Context context) {
-            data = LocalStorageUtil.getAllPicPath();//默认夹在目录下所有照片
+            data = LocalStorageManager.getAllPicPath();//默认夹在目录下所有照片
             this.context = context;
             layoutInflater = LayoutInflater.from(context);
         }
@@ -225,7 +222,7 @@ public class PicWallActivity extends AppCompatActivity {
                     RecyclerView.LayoutParams param = (RecyclerView.LayoutParams) cvItemCard
                             .getLayoutParams();
 
-                    param.height = ScreenPropUtil.screenWidth_px * 3 / 4 - param.getMarginStart() - param
+                    param.height = ScreenPropManager.screenWidth_px * 3 / 4 - param.getMarginStart() - param
                             .getMarginEnd();
 
                     cvItemCard.setLayoutParams(param);
@@ -233,7 +230,7 @@ public class PicWallActivity extends AppCompatActivity {
                     RecyclerView.LayoutParams param = (RecyclerView.LayoutParams) cvItemCard
                             .getLayoutParams();
 
-                    param.height = ScreenPropUtil.screenWidth_px / 2 - param.getMarginStart() - param
+                    param.height = ScreenPropManager.screenWidth_px / 2 - param.getMarginStart() - param
                             .getMarginEnd();
 
                     cvItemCard.setLayoutParams(param);
@@ -289,7 +286,7 @@ public class PicWallActivity extends AppCompatActivity {
     //取消过滤
     private void abandonFilter() {
         isFiltered = false;
-        mAdapter.setData(LocalStorageUtil.getAllPicPath());
+        mAdapter.setData(LocalStorageManager.getAllPicPath());
         fab.setImageResource(android.R.drawable.ic_menu_search);
         ToastUtil.showToast(PicWallActivity.this, "已显示所有照片");
         Snackbar.make(fab, "已显示所有照片", Snackbar.LENGTH_LONG).show();

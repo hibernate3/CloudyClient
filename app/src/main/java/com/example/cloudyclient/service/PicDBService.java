@@ -3,17 +3,11 @@ package com.example.cloudyclient.service;
 import android.app.IntentService;
 import android.content.Intent;
 import android.content.Context;
-import android.util.Log;
 
-import com.example.cloudyclient.MainApplication;
 import com.example.cloudyclient.model.biz.PicEntityDBManager;
-import com.example.cloudyclient.util.LocalStorageUtil;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-
-import permissions.dispatcher.RuntimePermissions;
 
 /**
  * An {@link IntentService} subclass for handling asynchronous task requests in
