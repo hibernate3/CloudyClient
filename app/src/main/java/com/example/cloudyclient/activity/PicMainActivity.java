@@ -26,6 +26,7 @@ import com.example.cloudyclient.model.bean.PicEntity;
 import com.example.cloudyclient.model.biz.LocalStorageManager;
 import com.example.cloudyclient.model.biz.PicEntityDBManager;
 import com.example.cloudyclient.model.biz.ToastUtil;
+import com.example.cloudyclient.service.PicDBService;
 import com.example.photoview.PhotoView;
 import com.squareup.picasso.Picasso;
 
@@ -133,7 +134,8 @@ public class PicMainActivity extends AppCompatActivity {
                                 .setPositiveButton("是", new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialog, int which) {
-                                        LocalStorageManager.deletePhoto(mPicPath);
+                                        LocalStorageManager.deletePhoto(mPicPath);//删除本地文件
+                                        PicDBService.startActionDelete(PicMainActivity.this, mPicPath);//删除数据库记录
 
                                         Intent intent = new Intent();
                                         intent.putExtra(PicWallActivity.INTENT_TAG_POSITION, mPosition);

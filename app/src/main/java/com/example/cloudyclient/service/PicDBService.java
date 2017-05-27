@@ -3,6 +3,7 @@ package com.example.cloudyclient.service;
 import android.app.IntentService;
 import android.content.Intent;
 import android.content.Context;
+import android.widget.Switch;
 
 import com.example.cloudyclient.model.biz.PicEntityDBManager;
 
@@ -19,10 +20,13 @@ import java.util.List;
 public class PicDBService extends IntentService {
     // TODO: Rename actions, choose action names that describe tasks that this
     // IntentService can perform, e.g. ACTION_FETCH_NEW_ITEMS
-    private static final String ACTION_INSERT = "com.example.cloudyclient.service.action.INSERT";
+    private static final String ACTION_INSERT_MUL = "com.example.cloudyclient.service.action.INSERT_MUL";
+    private static final String ACTION_INSERT_ONE = "com.example.cloudyclient.service.action.INSERT_ONE";
+    private static final String ACTION_DELETE_ONE = "com.example.cloudyclient.service.action.DELETE_ONE";
 
     // TODO: Rename parameters
     private static final String PICS_PATH_PARAM = "com.example.cloudyclient.service.extra.PICS_PATH_PARAM";
+    private static final String PIC_PATH_PARAM = "com.example.cloudyclient.service.extra.PIC_PATH_PARAM";
 
     public PicDBService() {
         super("PicDBService");
@@ -36,18 +40,42 @@ public class PicDBService extends IntentService {
      */
     public static void startActionInsert(Context context, List<String> paths) {
         Intent intent = new Intent(context, PicDBService.class);
-        intent.setAction(ACTION_INSERT);
+        intent.setAction(ACTION_INSERT_MUL);
         intent.putStringArrayListExtra(PICS_PATH_PARAM, (ArrayList<String>) paths);
+        context.startService(intent);
+    }
+
+    public static void startActionInsert(Context context, String path) {
+        Intent intent = new Intent(context, PicDBService.class);
+        intent.setAction(ACTION_INSERT_ONE);
+        intent.putExtra(PIC_PATH_PARAM, path);
+        context.startService(intent);
+    }
+
+    public static void startActionDelete(Context context, String path) {
+        Intent intent = new Intent(context, PicDBService.class);
+        intent.setAction(ACTION_DELETE_ONE);
+        intent.putExtra(PIC_PATH_PARAM, path);
         context.startService(intent);
     }
 
     @Override
     protected void onHandleIntent(Intent intent) {
         if (intent != null) {
-            final String action = intent.getAction();
-            if (ACTION_INSERT.equals(action)) {
-                final List<String> pics_path_param = intent.getStringArrayListExtra(PICS_PATH_PARAM);
-                handleActionInsert(pics_path_param);
+            String action = intent.getAction();
+
+            switch (action) {
+                case ACTION_INSERT_MUL:
+                    handleActionInsert(intent.getStringArrayListExtra(PICS_PATH_PARAM));
+                    break;
+                case ACTION_INSERT_ONE:
+                    handleActionInsert(intent.getStringExtra(PIC_PATH_PARAM));
+                    break;
+                case ACTION_DELETE_ONE:
+                    handleActionDelete(intent.getStringExtra(PIC_PATH_PARAM));
+                    break;
+                default:
+                    break;
             }
         }
     }
@@ -58,5 +86,13 @@ public class PicDBService extends IntentService {
      */
     private void handleActionInsert(List<String> paths) {
         PicEntityDBManager.getInstance().insert(paths);
+    }
+
+    private void handleActionInsert(String path) {
+        PicEntityDBManager.getInstance().insert(path);
+    }
+
+    private void handleActionDelete(String path) {
+        PicEntityDBManager.getInstance().delete(path);
     }
 }

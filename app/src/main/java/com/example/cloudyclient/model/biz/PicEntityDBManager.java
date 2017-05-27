@@ -14,6 +14,7 @@ import org.greenrobot.greendao.query.QueryBuilder;
 import org.greenrobot.greendao.query.WhereCondition;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.IllegalFormatCodePointException;
 import java.util.List;
 
@@ -39,6 +40,38 @@ public class PicEntityDBManager {
 
     public void insert(PicEntity picEntity) {
         mPicEntityDao.insertOrReplace(picEntity);
+    }
+
+    public void insert(String fileName) {
+        try {
+            ExifInterface exifInterface = new ExifInterface(fileName);
+            PicEntity picEntity = new PicEntity();
+
+
+            picEntity.setFileSize(new File(fileName).length());
+            picEntity.setFileName(fileName);
+            picEntity.setFMake(exifInterface.getAttribute(ExifInterface.TAG_MAKE));
+            picEntity.setFModel(exifInterface.getAttribute(ExifInterface.TAG_MODEL));
+            picEntity.setFDateTime(exifInterface.getAttribute(ExifInterface.TAG_DATETIME));
+            picEntity.setFFNumber(exifInterface.getAttribute(ExifInterface.TAG_F_NUMBER));
+
+            double tempTime = exifInterface.getAttributeDouble(ExifInterface.TAG_EXPOSURE_TIME, 0.00);
+            if (tempTime < 1.00) {
+                picEntity.setFExposureTime("1/" + Math.rint(1 / tempTime));
+            } else {
+                picEntity.setFExposureTime("" + tempTime);
+            }
+
+            picEntity.setFISOSpeedRatings(exifInterface.getAttribute(ExifInterface
+                    .TAG_ISO_SPEED_RATINGS));
+            picEntity.setFFocalLength(exifInterface.getAttribute(ExifInterface.TAG_FOCAL_LENGTH));
+            picEntity.setFImageLength(exifInterface.getAttribute(ExifInterface.TAG_IMAGE_LENGTH));
+            picEntity.setFImageWidth(exifInterface.getAttribute(ExifInterface.TAG_IMAGE_WIDTH));
+
+            mPicEntityDao.insertOrReplace(picEntity);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public void insert(List<String> fileNames) {
@@ -80,9 +113,9 @@ public class PicEntityDBManager {
 
         if (picEntity != null) {
             mPicEntityDao.deleteByKey(picEntity.getId());
-            Log.d(MainApplication.TAG, "成功删除： " + picEntity.getFileName());
+            Log.d(MainApplication.TAG, "成功删除数据库记录： " + picEntity.getFileName());
         } else {
-            Log.d(MainApplication.TAG, "文件不存在");
+            Log.d(MainApplication.TAG, "数据库记录不存在");
         }
     }
 

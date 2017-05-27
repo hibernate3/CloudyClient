@@ -6,6 +6,7 @@ import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -57,6 +58,8 @@ public class PicWallActivity extends AppCompatActivity {
     PhotoView showImg;
     @BindView(R.id.show_canvas)
     FrameLayout showCanvas;
+    @BindView(R.id.swipe_layout)
+    SwipeRefreshLayout swipeLayout;
 
     Info photoViewInfo;//图片位置尺寸信息
 
@@ -105,6 +108,16 @@ public class PicWallActivity extends AppCompatActivity {
                         break;
                 }
                 return true;
+            }
+        });
+
+        swipeLayout.setDistanceToTriggerSync(666);//设定手指下滑距离触发刷新
+        swipeLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                mAdapter.refreshData();
+                swipeLayout.setRefreshing(false);
+                Snackbar.make(fab, "已同步最新本地照片", Snackbar.LENGTH_LONG).show();
             }
         });
 
@@ -284,6 +297,11 @@ public class PicWallActivity extends AppCompatActivity {
 
         public void setData(List<String> data) {
             this.data = data;
+            notifyDataSetChanged();
+        }
+
+        public void refreshData() {
+            this.data = LocalStorageManager.getAllPicPath();
             notifyDataSetChanged();
         }
 
