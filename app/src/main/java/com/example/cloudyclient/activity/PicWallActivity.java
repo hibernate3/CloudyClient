@@ -15,6 +15,7 @@ import android.support.v7.widget.OrientationHelper;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -26,12 +27,14 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.cloudyclient.MainApplication;
 import com.example.cloudyclient.R;
 import com.example.cloudyclient.activity.dialog.PicSearchDialog;
 import com.example.cloudyclient.model.bean.PicEntity;
 import com.example.cloudyclient.model.biz.LocalStorageManager;
 import com.example.cloudyclient.model.biz.ScreenPropManager;
 import com.example.cloudyclient.model.biz.ToastUtil;
+import com.example.cloudyclient.service.PicDBService;
 import com.example.photoview.Info;
 import com.example.photoview.PhotoView;
 import com.squareup.picasso.Callback;
@@ -212,11 +215,6 @@ public class PicWallActivity extends AppCompatActivity {
         }
 
         @Override
-        public int getItemViewType(int position) {
-            return super.getItemViewType(position);
-        }
-
-        @Override
         public int getItemCount() {
             return data == null ? 0 : data.size();
         }
@@ -357,6 +355,11 @@ public class PicWallActivity extends AppCompatActivity {
             setResult(RESULT_OK);
             super.onBackPressed();
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
     }
 
     @Override
